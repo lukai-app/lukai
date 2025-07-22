@@ -1,0 +1,18 @@
+meta {
+  name: post to extract
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{url}}/api/v1/agent/analyze-transaction
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "text": "gaste 2 soles en una galleta",
+    "phone_number": "51981370881"
+  }
+}

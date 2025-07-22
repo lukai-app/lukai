@@ -29,17 +29,22 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:all": "turbo run dev",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "test": "turbo run test",
-    "clean": "turbo run clean && rm -rf node_modules",
+    "clean": "turbo run clean && rm -rf node_modules && cd apps/agent && poetry env remove python",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:migrate": "turbo run db:migrate",
-    "db:generate": "turbo run db:generate"
+    "db:generate": "turbo run db:generate",
+    "install:all": "npm install && cd apps/agent && source .venv/bin/activate && poetry install",
+    "agent:install": "cd apps/agent && poetry install",
+    "agent:dev": "cd apps/agent && source .venv/bin/activate && poetry run uvicorn app.main:app --reload --port 8000"
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.12",
     "@types/react": "^18.3.12",
+    "concurrently": "^8.2.2",
     "prettier": "^3.0.0",
     "react": "^18.3.1",
     "turbo": "^2.5.5",

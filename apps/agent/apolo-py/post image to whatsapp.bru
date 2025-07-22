@@ -1,0 +1,50 @@
+meta {
+  name: post image to whatsapp
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{url}}/api/v1/webhooks/whatsapp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "messages": [
+                {
+                  "from": "51989009435",
+                  "id": "wamid.ABCDE2232Fabcdef123456789",
+                  "timestamp": "1685523600",
+                  "type": "image",
+                  "image": {
+                    "id": "9619990104795341",
+                    "mime_type": "image/jpeg",
+                    "sha256": "image_hash_here",
+                    "caption": "esta de aca"
+                  }
+                }
+              ],
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "nestor"
+                  }
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}

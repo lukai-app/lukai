@@ -1,0 +1,127 @@
+[tool.poetry]
+name = "lukai-agent"
+version = "1.0.0"
+description = "LukAI Python Agent Service"
+authors = ["LukAI Team <hello@lukai.com>"]
+license = "AGPL-3.0"
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
+pydantic = "^2.11.3"
+pydantic-settings = "^2.9.1"
+python-dotenv = "^1.1.0"
+httpx = "^0.28.1"
+openai = "^1.76.0"
+openai-agents = "^0.0.13"
+mistralai = "^1.8.1"
+anthropic = "^0.50.0"
+cohere = "^5.15.0"
+groq = "^0.24.0"
+langchain-core = "^0.3.65"
+langchain-google-genai = "^2.1.5"
+langgraph = "^0.4.8"
+langgraph-checkpoint = "^2.1.0"
+langgraph-checkpoint-redis = "^0.0.6"
+langgraph-prebuilt = "^0.2.2"
+langgraph-sdk = "^0.1.70"
+langsmith = "^0.3.45"
+pydantic-ai = "^0.1.9"
+pydantic-ai-slim = "^0.1.9"
+pydantic-evals = "^0.1.9"
+pydantic-graph = "^0.1.9"
+mixpanel = "^4.10.1"
+redis = "^5.0.0"
+upstash-redis = "^1.4.0"
+boto3 = "^1.38.8"
+Pillow = "^11.2.1"
+PyPDF2 = "^3.0.1"
+requests = "^2.32.3"
+rich = "^14.0.0"
+tenacity = "^9.1.2"
+tqdm = "^4.67.1"
+numpy = "^1.24.0"
+scikit-learn = "^1.6.1"
+scipy = "^1.15.3"
+torch = "^2.7.0"
+tokenizers = "^0.21.1"
+safetensors = "^0.5.3"
+reportlab = "^4.4.1"
+filetype = "^1.2.0"
+orjson = "^3.10.18"
+ormsgpack = "^1.10.0"
+xxhash = "^3.5.0"
+zstandard = "^0.23.0"
+python-ulid = "^3.0.0"
+pytz = "^2025.2"
+sse-starlette = "^2.3.3"
+starlette = "^0.46.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.24.0"
+black = "^24.0.0"
+flake8 = "^7.0.0"
+mypy = "^1.8.0"
+isort = "^5.13.0"
+
+[tool.poetry.scripts]
+dev = "uvicorn app.main:app --reload --port 8000"
+start = "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+test = "pytest"
+lint = "flake8 app tests"
+format = "black app tests"
+type-check = "mypy app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto" 

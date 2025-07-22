@@ -40,7 +40,8 @@ lukai/
 ├── apps/
 │   ├── web/              # Next.js web application (AGPLv3)
 │   ├── mobile/           # React Native mobile app (AGPLv3)
-│   └── backend/          # Node.js API server (AGPLv3)
+│   ├── backend/          # Node.js API server (AGPLv3)
+│   └── agent/            # Python FastAPI agent service (AGPLv3)
 ├── packages/
 │   ├── ui/               # Shared UI components (AGPLv3)
 │   ├── config/           # Shared configurations (AGPLv3)
@@ -59,6 +60,7 @@ lukai/
 LukAI uses a dual licensing approach:
 
 ### Open Source (AGPLv3)
+
 - All code outside the `/ee` directory
 - Core scheduling functionality
 - Basic AI features
@@ -66,6 +68,7 @@ LukAI uses a dual licensing approach:
 - Mobile and web applications
 
 ### Commercial License
+
 - Code in the `/ee` directory
 - Enterprise features (coming soon)
 - Advanced AI capabilities
@@ -81,47 +84,60 @@ For commercial licensing inquiries: licensing@lukai.com
 ### Prerequisites
 
 - Node.js 18+ and npm
+- Python 3.11+ and Poetry
 - PostgreSQL database
 - Git
 
 ### Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/lukai/lukai.git
    cd lukai
    ```
 
 2. **Install dependencies**
+
    ```bash
-   npm install
+   npm run install:all
    ```
 
 3. **Set up environment variables**
+
    ```bash
    # Copy example environment files
    cp apps/web/env.example apps/web/.env.local
    cp apps/backend/env.example apps/backend/.env.local
    cp apps/mobile/env.example apps/mobile/.env.local
-   
+   cp apps/agent/env.example apps/agent/.env.local
+
    # Edit each .env.local file with your values
    # See docs/environment-setup.md for detailed instructions
    ```
 
 4. **Set up the database**
+
    ```bash
    npm run db:migrate
    npm run db:generate
    ```
 
 5. **Start development servers**
+
    ```bash
-   npm run dev
+   # Start all services (web, mobile, backend, agent)
+   npm run dev:all
+
+   # Or start individual services
+   npm run dev          # JavaScript/TypeScript services only
+   npm run agent:dev    # Python agent only
    ```
 
    This will start:
    - Web app: http://localhost:3000
    - Backend API: http://localhost:3001
+   - Agent API: http://localhost:8000
    - Mobile app: Expo development server
 
 ## 🔧 Development
@@ -131,24 +147,36 @@ For commercial licensing inquiries: licensing@lukai.com
 ```bash
 # Development
 npm run dev          # Start all apps in development mode
+npm run dev:all      # Start all services including Python agent
 npm run build        # Build all apps for production
 npm run lint         # Run linting across all packages
 npm run type-check   # Run TypeScript type checking
 npm run test         # Run tests across all packages
 
+# Python Agent
+npm run agent:dev    # Start Python agent only
+npm run agent:install # Install Python dependencies
+./scripts/agent.sh dev      # Alternative: use agent script
+./scripts/agent.sh install  # Alternative: use agent script
+```
+
 # Database
-npm run db:migrate   # Run database migrations
-npm run db:generate  # Generate Prisma client
-npm run db:deploy    # Deploy migrations to production
+
+npm run db:migrate # Run database migrations
+npm run db:generate # Generate Prisma client
+npm run db:deploy # Deploy migrations to production
 
 # Utilities
-npm run clean        # Clean all build artifacts
-npm run format       # Format code with Prettier
-```
+
+npm run clean # Clean all build artifacts
+npm run format # Format code with Prettier
+
+````
 
 ### Working with the Monorepo
 
 Each app/package has its own:
+
 - `package.json` with specific dependencies
 - `README.md` with app-specific documentation
 - `.env.example` with required environment variables
@@ -158,7 +186,7 @@ Each app/package has its own:
 ```bash
 # Generate a new package
 npx turbo gen workspace --name @lukai/new-package
-```
+````
 
 ## 🤝 Contributing
 
@@ -197,4 +225,4 @@ Looking for enterprise features, support, or custom integrations?
     <a href="https://discord.gg/lukai">Discord</a> •
     <a href="https://twitter.com/lukai">Twitter</a>
   </p>
-</div> 
+</div>

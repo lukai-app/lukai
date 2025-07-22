@@ -1,0 +1,47 @@
+meta {
+  name: post to whatsapp
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{url}}/api/v1/webhooks/whatsapp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "messages": [
+                {
+                  //"from": "51981370881", // User's phone number (without +)
+                  "id": "wamiad1sdaasdsads121sdssd5",
+                  "from": "51989009435",
+                  "type": "text", // Message type
+                  "text": {
+                    "body": "crea una cuenta Yape con un saldo de 50 soles"
+                  }
+                }
+              ],
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "nestor" // User's name
+                  }
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}

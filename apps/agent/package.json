@@ -1,0 +1,20 @@
+{
+  "name": "@lukai/agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LukAI Python Agent Service",
+  "license": "AGPL-3.0",
+  "scripts": {
+    "dev": "source .venv/bin/activate && poetry run uvicorn app.main:app --reload --port 8000",
+    "start": "poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000",
+    "build": "poetry build",
+    "install": "poetry install",
+    "test": "poetry run pytest",
+    "lint": "poetry run flake8 app tests",
+    "format": "poetry run black app tests",
+    "type-check": "poetry run mypy app",
+    "clean": "poetry env remove python"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,51 @@
+meta {
+  name: post doc to whatsapp
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{url}}/api/v1/webhooks/whatsapp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "messages": [
+                {
+                  "from": "51989009435",
+                  "id": "wamid.ABCDEFabcdef123456789",
+                  "timestamp": "1685523600",
+                  "type": "document",
+                  "document": {
+                    "id": "1396128441631773",
+                    "mime_type": "application/pdf",
+                    "sha256": "document_hash_here",
+                    "filename": "EECC052025_08629186_unlocked.pdf",
+                    "caption": "Estas son mis transacciones de mayo"
+                  }
+                }
+              ],
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "nestor"
+                  }
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}

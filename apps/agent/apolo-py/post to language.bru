@@ -1,0 +1,22 @@
+meta {
+  name: post to language
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{url}}/api/v1/language/chat
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "messages": [
+      {
+        "role": "user",
+        "content": "no se, que puedes hacer"
+      }
+    ]
+  }
+}

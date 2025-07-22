@@ -1,0 +1,17 @@
+meta {
+  name: post to query
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/api/v1/query
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+    "query": "what can you do?"
+  }
+}

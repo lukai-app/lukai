@@ -1,0 +1,17 @@
+meta {
+  name: post to apolo
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{url}}/api/v1/apolo/query
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "query": "mi suscription no esta funcionando"
+  }
+}
