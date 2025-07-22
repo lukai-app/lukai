@@ -1,0 +1,354 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum account_type {
+  REGULAR
+  SAVINGS
+  DEBT
+}
+
+model contact {
+  id                        String                     @id @default(uuid())
+  name                      String?
+  phone_number              String                     @unique
+  country_code              String? // ISO 3166-1 alpha-2
+  favorite_language         String? // ISO 639-1
+  favorite_currency_code    String? // ISO 4217
+  favorite_locale           String? // BCP 47
+  favorite_timezone         String? // IANA Time Zone Database
+  user_profile_insights     String?
+  chatId                    String
+  weeklyReport              Boolean                    @default(false)
+  encryption_key            String? // Encrypted encryption key
+  recovery_key              String? // Encrypted recovery key
+  created_at                DateTime                   @default(now())
+  updated_at                DateTime                   @updatedAt
+  accounts                  accounts[]
+  incomes                   income[]
+  income_categories         income_category[]
+  expenses                  expense[]
+  expense_categories        expense_category[]
+  transfers                 transfer[]
+  subscription              subscription?
+  budget                    budget[]
+  otp                       otp?
+  monthly_snapshot          monthly_snapshot[]
+  transaction_tags          transaction_tag[]
+  google_sheets_connections google_sheets_connection[]
+}
+
+model otp {
+  id         String   @id @default(uuid())
+  contact_id String   @unique
+  code       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  contact contact @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+}
+
+model accounts {
+  id            String       @id @default(uuid())
+  key           String
+  contact_id    String
+  account_type  account_type
+  name          String
+  description   String?
+  balance       String
+  currency_code String
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+
+  contact           contact                    @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  sendTransfers     transfer[]                 @relation("from_account")
+  getTransfers      transfer[]                 @relation("to_account")
+  income            income[]
+  expense           expense[]
+  balance_snapshots account_balance_snapshot[]
+
+  @@unique([contact_id, key, currency_code])
+}
+
+model income {
+  id            String   @id @default(uuid())
+  contact_id    String
+  amount        String
+  to_account_id String
+  description   String?
+  message       String?
+  currency_code String
+  category_id   String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  contact  contact         @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  category income_category @relation(fields: [category_id], references: [id])
+  to       accounts        @relation(fields: [to_account_id], references: [id])
+}
+
+model income_category {
+  id          String   @id @default(uuid())
+  key         String
+  contact_id  String
+  name        String
+  description String?
+  color       String
+  image_id    String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  contact                      contact                        @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  income                       income[]
+  image                        images?                        @relation(fields: [image_id], references: [id])
+  income_snapshot_per_category income_snapshot_per_category[]
+
+  @@unique([contact_id, key])
+}
+
+model expense {
+  id              String   @id @default(uuid())
+  contact_id      String
+  amount          String
+  from_account_id String
+  description     String?
+  message         String?
+  currency_code   String
+  category_id     String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  contact  contact           @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  category expense_category  @relation(fields: [category_id], references: [id])
+  from     accounts          @relation(fields: [from_account_id], references: [id])
+  tags     transaction_tag[]
+}
+
+model expense_category {
+  id          String   @id @default(uuid())
+  key         String
+  contact_id  String
+  name        String
+  description String?
+  color       String?
+  image_id    String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  contact                       contact                         @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  expense                       expense[]
+  image                         images?                         @relation(fields: [image_id], references: [id])
+  budget_per_category           budget_per_category[]
+  expense_snapshot_per_category expense_snapshot_per_category[]
+
+  @@unique([contact_id, key])
+}
+
+model budget {
+  id         String   @id @default(uuid())
+  contact_id String
+  amount     String
+  currency   String
+  month      Int // 0 to 11
+  year       Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  contact             contact               @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  budget_per_category budget_per_category[]
+
+  @@unique([contact_id, month, year, currency])
+}
+
+model budget_per_category {
+  id                  String   @id @default(uuid())
+  budget_id           String
+  expense_category_id String
+  amount              String
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  budget           budget           @relation(fields: [budget_id], references: [id], onDelete: Cascade)
+  expense_category expense_category @relation(fields: [expense_category_id], references: [id], onDelete: Cascade)
+
+  @@unique([budget_id, expense_category_id])
+}
+
+model transfer {
+  id              String   @id @default(uuid())
+  contact_id      String
+  amount          String
+  from_account_id String
+  to_account_id   String
+  description     String?
+  message         String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  contact contact  @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  from    accounts @relation(fields: [from_account_id], references: [id], name: "from_account")
+  to      accounts @relation(fields: [to_account_id], references: [id], name: "to_account")
+}
+
+model transaction_tag {
+  id         String   @id @default(uuid())
+  name       String
+  contact_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  expenses expense[]
+  contact  contact   @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+
+  @@unique([contact_id, name])
+}
+
+model images {
+  id         String   @id @default(uuid())
+  url        String
+  file_name  String
+  extension  String
+  size       Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  expense_category expense_category[]
+  income_category  income_category[]
+}
+
+model subscription {
+  id              String              @id @default(uuid())
+  contact_id      String              @unique
+  subscription_id String              @unique
+  product_id      String
+  variant_id      String
+  customer_id     String
+  user_email      String
+  status          subscription_status
+  trial_ends_at   DateTime?
+  renews_at       DateTime
+  ends_at         DateTime?
+  card_brand      String?
+  card_last_four  String?
+  created_at      DateTime            @default(now())
+  updated_at      DateTime            @updatedAt
+
+  contact contact @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+}
+
+enum subscription_status {
+  on_trial
+  active
+  paused
+  past_due
+  unpaid
+  cancelled
+  expired
+}
+
+model monthly_snapshot {
+  id               String   @id @default(uuid())
+  contact_id       String
+  year             Int
+  month            Int // 0 to 11
+  currency_code    String
+  total_income     String
+  total_expense    String
+  total_savings    String
+  cash_flow        String // income - expenses for the month
+  accumulated_cash String // accumulated cash flow until this month
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  contact                       contact                         @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+  income_snapshot_per_category  income_snapshot_per_category[]
+  expense_snapshot_per_category expense_snapshot_per_category[]
+  account_balance_snapshots     account_balance_snapshot[]
+
+  @@unique([contact_id, year, month, currency_code])
+}
+
+model income_snapshot_per_category {
+  id          String   @id @default(uuid())
+  snapshot_id String
+  category_id String
+  amount      String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  monthly_snapshot monthly_snapshot @relation(fields: [snapshot_id], references: [id], onDelete: Cascade)
+  income_category  income_category  @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@unique([snapshot_id, category_id])
+}
+
+model expense_snapshot_per_category {
+  id          String   @id @default(uuid())
+  snapshot_id String
+  category_id String
+  amount      String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  monthly_snapshot monthly_snapshot @relation(fields: [snapshot_id], references: [id], onDelete: Cascade)
+  expense_category expense_category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@unique([snapshot_id, category_id])
+}
+
+model account_balance_snapshot {
+  id          String   @id @default(uuid())
+  snapshot_id String
+  account_id  String
+  balance     String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  monthly_snapshot monthly_snapshot @relation(fields: [snapshot_id], references: [id], onDelete: Cascade)
+  account          accounts         @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@unique([snapshot_id, account_id])
+}
+
+enum google_sheets_connection_status {
+  active
+  inactive
+  expired
+  error
+}
+
+model google_sheets_connection {
+  id               String                          @id @default(uuid())
+  contact_id       String
+  name             String // User-friendly name for this connection
+  spreadsheet_id   String // Google Sheets document ID
+  worksheet_name   String // Name of the specific worksheet/tab
+  access_token     String // Encrypted Google OAuth access token
+  refresh_token    String // Encrypted Google OAuth refresh token
+  token_expires_at DateTime // When the access token expires
+  status           google_sheets_connection_status @default(active)
+
+  // Column mapping for the sheet
+  date_column        String? // Column header for date (e.g., "Date", "Fecha")
+  amount_column      String? // Column header for amount (e.g., "Amount", "Monto")
+  description_column String? // Column header for description (e.g., "Description", "Descripción")
+  category_column    String? // Column header for category (e.g., "Category", "Categoría")
+
+  last_sync_at  DateTime? // Last successful sync timestamp
+  error_message String? // Last error message if any
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  contact contact @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+
+  @@unique([contact_id, spreadsheet_id, worksheet_name])
+}

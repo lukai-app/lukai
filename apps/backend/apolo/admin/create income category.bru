@@ -1,0 +1,27 @@
+meta {
+  name: create income category
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/v1/admin/create-income-category
+  body: json
+  auth: none
+}
+
+headers {
+  authorization: {{adminToken}}
+}
+
+body:json {
+  {
+    "key": "DEPOSIT",
+    "enName": "Deposit",
+    "esName": "Depósito inicial",
+    "enDescription": "Initial balance when creating a financial account",
+    "esDescription": "Saldo de apertura al crear una cuenta financiera",
+    "imageId": "PxSxxa0V9wVhcXxw",
+    "color": "#4CAF50"
+  }
+}

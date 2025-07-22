@@ -1,0 +1,43 @@
+meta {
+  name: send message
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/v1/webhooks/whatsapp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "entry": [
+      {
+        "changes": [
+          {
+            "value": {
+              "messages": [
+                {
+                  //"from": "51981370881", // User's phone number (without +)
+                  "from":"51989009435",
+                  "type": "text", // Message type
+                  "text": {
+                    "body": "gaste 20 soles pastilazzzz" // Message content
+                  }
+                }
+              ],
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "nestor" // User's name
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

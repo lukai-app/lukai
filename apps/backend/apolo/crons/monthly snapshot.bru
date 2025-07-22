@@ -1,0 +1,18 @@
+meta {
+  name: monthly snapshot
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/v1/crons/monthly-snapshot
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "year": 2025,
+    "month": 4
+  }
+}

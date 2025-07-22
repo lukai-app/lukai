@@ -1,0 +1,15 @@
+meta {
+  name: send otp
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/api/auth/send-code
+  body: json
+  auth: none
+}
+
+body:json {
+  { "phoneNumber":"+51989009435" }
+}

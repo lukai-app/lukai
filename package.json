@@ -1,0 +1,53 @@
+{
+  "name": "lukai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Open-source AI scheduling infrastructure",
+  "keywords": [
+    "ai",
+    "scheduling",
+    "open-source",
+    "typescript",
+    "nextjs",
+    "react-native"
+  ],
+  "homepage": "https://lukai.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukai/lukai.git"
+  },
+  "license": "AGPL-3.0",
+  "author": {
+    "name": "LukAI",
+    "email": "hello@lukai.com"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "ee/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:migrate": "turbo run db:migrate",
+    "db:generate": "turbo run db:generate"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.10.12",
+    "prettier": "^3.0.0",
+    "turbo": "^1.10.12",
+    "typescript": "^5.0.0",
+    "react": "^18.3.1",
+    "@types/react": "^18.3.12"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "packageManager": "npm@10.0.0"
+} 

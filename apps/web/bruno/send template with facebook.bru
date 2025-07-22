@@ -1,0 +1,52 @@
+meta {
+  name: send template with facebook
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://graph.facebook.com/v21.0/468613326329473/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: EAAK5iEUNODsBO3XNhO6L92H30hlSZAJlK0D4M4T6IMZCX7OXoCLT4ITcGCCQYJlAneZCUqrFAgt7IwdKQwgpFL0TxMcUm5WLodLzOfxfZBmfdmri8ZByOVJlDnBUyDQM6UsBLnBfSaUz1ENgPMzHcX2DlXWqCx8Cq9QdolqKrJR3NyqPebKup6oZA7fBktlC4QVLgLvZCzeWhERHygU
+}
+
+body:json {
+  {
+    "messaging_product": "whatsapp",
+    "recipient_type": "individual",
+    "to": "+51989009435",
+    "type": "template",
+    "template": {
+      "name": "otp",
+      "language": {
+        "code": "es"
+      },
+      "components": [
+        {
+          "type": "body",
+          "parameters": [
+            {
+              "type": "text",
+              "text": "840836"
+            }
+          ]
+        },
+        {
+          "type": "button",
+          "sub_type": "url",
+          "index": "0",
+          "parameters": [
+            {
+              "type": "text",
+              "text": "127829"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

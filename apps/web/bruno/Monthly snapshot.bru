@@ -1,0 +1,18 @@
+meta {
+  name: Monthly snapshot
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{url}}/api/cron/monthly-snapshot
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "month": 11,
+    "year": 2024
+  }
+}

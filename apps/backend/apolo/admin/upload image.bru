@@ -1,0 +1,20 @@
+meta {
+  name: upload image
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/v1/admin/upload-image
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  authorization: {{adminToken}}
+}
+
+body:multipart-form {
+  image: @file(/Users/nestorxyz/Downloads/rsz_1emojiscom_coin-stack-with-a-green-checkmark-emoji-indicating-initial-account-balance-2.png)
+  fileName: deposit
+}
