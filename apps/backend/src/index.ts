@@ -1,9 +1,6 @@
-import { config } from 'dotenv';
+// Load environment variables first, before any other imports
+import './load-env';
 
-if (process.env.NODE_ENV !== 'production') {
-  config();
-}
-// call after config() to access the env variables
 import { app } from './api';
 
 const port = process.env.PORT || 3333;

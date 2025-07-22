@@ -8,6 +8,8 @@ node_modules/
 /dist
 /.next/
 /out/
+apps/*/.next
+packages/*/dist
 
 # Environment variables
 .env
@@ -21,6 +23,7 @@ apps/*/.env
 apps/*/.env.local
 apps/*/.env.development
 apps/*/.env.production
+
 
 # Debug and logs
 npm-debug.log*
@@ -101,4 +104,4 @@ logs
 *.tgz
 
 # Turbo
-.turbo/ 
+.turbo/
