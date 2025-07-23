@@ -26,8 +26,12 @@ class Settings(BaseSettings):
     # WhatsApp Configuration
     WHATSAPP_VERIFY_TOKEN: str = "your_verify_token"  # Change this in .env
     WHATSAPP_API_TOKEN: str  # Your WhatsApp Business API token
-    WHATSAPP_WEBHOOK_SECRET: str = ""  # Your WhatsApp Webhook Secret for signature verification
-    WHATSAPP_SKIP_SIGNATURE_VERIFICATION: bool = False  # Set to True for development only
+    WHATSAPP_WEBHOOK_SECRET: str = (
+        ""  # Your WhatsApp Webhook Secret for signature verification
+    )
+    WHATSAPP_SKIP_SIGNATURE_VERIFICATION: bool = (
+        False  # Set to True for development only
+    )
     WHATSAPP_API_URL: str = "https://graph.facebook.com"  # WhatsApp API base URL
     WHATSAPP_PHONE_NUMBER_ID: str  # Your WhatsApp Phone Number ID
     WHATSAPP_ADMIN_NUMBER: str  # Admin's WhatsApp number for error notifications

@@ -74,29 +74,27 @@ cleanup_task_started = False
 def verify_webhook_signature(payload: bytes, signature: str, secret: str) -> bool:
     """
     Verify the webhook signature from Meta/WhatsApp.
-    
+
     Args:
         payload: The raw request body as bytes
         signature: The X-Hub-Signature-256 header value
         secret: Your webhook secret from Meta App Dashboard
-        
+
     Returns:
         bool: True if signature is valid, False otherwise
     """
     if not signature or not secret:
         return False
-    
+
     # Remove 'sha256=' prefix if present
-    if signature.startswith('sha256='):
+    if signature.startswith("sha256="):
         signature = signature[7:]
-    
+
     # Create HMAC signature
     expected_signature = hmac.new(
-        secret.encode('utf-8'),
-        payload,
-        hashlib.sha256
+        secret.encode("utf-8"), payload, hashlib.sha256
     ).hexdigest()
-    
+
     # Compare signatures using secure comparison
     return hmac.compare_digest(expected_signature, signature)
 
@@ -1223,25 +1221,34 @@ async def whatsapp_webhook(request: Request) -> Dict[str, Any]:
 
     try:
         logger.info(f"🔔 WEBHOOK: Received webhook request at {webhook_received_at}")
-        
+
         # Get raw body for signature verification
         raw_body = await request.body()
-        
+
         # Verify webhook signature from Meta (skip in development if configured)
         if not settings.WHATSAPP_SKIP_SIGNATURE_VERIFICATION:
             signature = request.headers.get("X-Hub-Signature-256")
-            if not verify_webhook_signature(raw_body, signature, settings.WHATSAPP_WEBHOOK_SECRET):
-                logger.warning(f"❌ WEBHOOK: Invalid signature from {request.client.host if request.client else 'unknown'}")
-                raise HTTPException(
-                    status_code=403, 
-                    detail="Invalid webhook signature. Request not from Meta/WhatsApp."
+            if not verify_webhook_signature(
+                raw_body, signature, settings.WHATSAPP_WEBHOOK_SECRET
+            ):
+                logger.warning(
+                    f"❌ WEBHOOK: Invalid signature from {request.client.host if request.client else 'unknown'}"
                 )
-            logger.info("✅ WEBHOOK: Signature verified - request is from Meta/WhatsApp")
+                raise HTTPException(
+                    status_code=403,
+                    detail="Invalid webhook signature. Request not from Meta/WhatsApp.",
+                )
+            logger.info(
+                "✅ WEBHOOK: Signature verified - request is from Meta/WhatsApp"
+            )
         else:
-            logger.warning("⚠️ WEBHOOK: Signature verification SKIPPED (development mode)")
-        
+            logger.warning(
+                "⚠️ WEBHOOK: Signature verification SKIPPED (development mode)"
+            )
+
         # Parse JSON body
         import json
+
         body = json.loads(raw_body.decode())
 
         if (
