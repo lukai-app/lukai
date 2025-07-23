@@ -24,6 +24,14 @@ apps/*/.env.local
 apps/*/.env.development
 apps/*/.env.production
 
+# Sensitive files that should never be committed
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.txt
+credentials.json
+
 # Python
 __pycache__/
 *.py[cod]

@@ -28,14 +28,13 @@ const parseEnv = () => {
         console.error(`  ${err.path.join('.')}: ${err.message}`);
       });
       // In mobile, we don't exit, just log the error
-      return envSchema.parse({
-        EXPO_PUBLIC_API_URL: 'http://localhost:3001',
-        EXPO_PUBLIC_API_KEY: 'your-api-key-here',
-        EXPO_PUBLIC_AGENT_URL: 'http://localhost:8000',
-        EXPO_PUBLIC_MIXPANEL_TOKEN: 'your-mixpanel-token-here',
-        EXPO_PUBLIC_APP_NAME: 'LukAI',
-        EXPO_PUBLIC_APP_VERSION: '1.0.0',
-      });
+      console.error(
+        '❌ Environment validation failed. Please check your .env file.'
+      );
+      console.error(
+        'Copy env.example to .env and fill in the required values.'
+      );
+      throw new Error('Invalid environment configuration');
     }
     throw error;
   }
