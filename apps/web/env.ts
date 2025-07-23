@@ -8,7 +8,6 @@ export const env = createEnv({
    */
   server: {
     NODE_ENV: z.enum(['development', 'test', 'production']),
-    CUSTOM_NODE_ENV: z.string().min(1),
   },
   /**
    * Specify your client-side environment variables schema here. This way you can ensure the app
@@ -31,7 +30,6 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env['NODE_ENV'],
-    CUSTOM_NODE_ENV: process.env['CUSTOM_NODE_ENV'],
     NEXT_PUBLIC_URL: process.env['NEXT_PUBLIC_URL'],
     NEXT_PUBLIC_MIXPANEL_TOKEN: process.env['NEXT_PUBLIC_MIXPANEL_TOKEN'],
     NEXT_PUBLIC_API_KEY: process.env['NEXT_PUBLIC_API_KEY'],
