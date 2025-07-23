@@ -7,11 +7,11 @@ const envSchema = z.object({
   EXPO_PUBLIC_API_KEY: z.string().min(1),
   EXPO_PUBLIC_AGENT_URL: z.string().url(),
   EXPO_PUBLIC_MIXPANEL_TOKEN: z.string().min(1),
-  
+
   // App Configuration
   EXPO_PUBLIC_APP_NAME: z.string().default('LukAI'),
   EXPO_PUBLIC_APP_VERSION: z.string().default('1.0.0'),
-  
+
   // External Services (optional)
   EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   EXPO_PUBLIC_GOOGLE_API_KEY: z.string().optional(),
@@ -30,9 +30,9 @@ const parseEnv = () => {
       // In mobile, we don't exit, just log the error
       return envSchema.parse({
         EXPO_PUBLIC_API_URL: 'http://localhost:3001',
-        EXPO_PUBLIC_API_KEY: 'dev-key',
+        EXPO_PUBLIC_API_KEY: 'your-api-key-here',
         EXPO_PUBLIC_AGENT_URL: 'http://localhost:8000',
-        EXPO_PUBLIC_MIXPANEL_TOKEN: 'dev-token',
+        EXPO_PUBLIC_MIXPANEL_TOKEN: 'your-mixpanel-token-here',
         EXPO_PUBLIC_APP_NAME: 'LukAI',
         EXPO_PUBLIC_APP_VERSION: '1.0.0',
       });
