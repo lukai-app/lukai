@@ -7,7 +7,7 @@ import parsePhoneNumber from 'libphonenumber-js';
 import {
   countryCodeToCurrencyCode,
   countryCodeToLanguageCode,
-  countryCodeToTimezone
+  countryCodeToTimezone,
 } from '../../lib/helpers/currency';
 import prisma from '../../lib/prisma';
 import { env } from '../../env';
@@ -35,7 +35,7 @@ export async function sendCode(req: Request, response: Response) {
     if (!phoneNumber) {
       return response.json({
         success: false,
-        message: 'Debes ingresar un número de teléfono'
+        message: 'Debes ingresar un número de teléfono',
       });
     }
 
@@ -44,7 +44,7 @@ export async function sendCode(req: Request, response: Response) {
     if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
       return response.json({
         success: false,
-        message: 'Ingresa un número de teléfono válido'
+        message: 'Ingresa un número de teléfono válido',
       });
     }
 
@@ -53,13 +53,13 @@ export async function sendCode(req: Request, response: Response) {
       ? countryCodeToLanguageCode(countryCode)
       : 'es';
     const currencyCode = countryCode
-      ? countryCodeToCurrencyCode(countryCode) ?? 'USD'
+      ? (countryCodeToCurrencyCode(countryCode) ?? 'USD')
       : 'USD';
     const locale = countryCode
-      ? clm.getLocaleByAlpha2(countryCode) ?? 'es'
+      ? (clm.getLocaleByAlpha2(countryCode) ?? 'es')
       : 'es';
     const timezone = countryCode
-      ? countryCodeToTimezone(countryCode) ?? 'America/Lima'
+      ? (countryCodeToTimezone(countryCode) ?? 'America/Lima')
       : 'America/Lima';
 
     // Create or update user with encryption keys
@@ -71,7 +71,7 @@ export async function sendCode(req: Request, response: Response) {
       favorite_locale: locale,
       favorite_timezone: timezone,
       country_code: countryCode,
-      source: 'web'
+      source: 'web',
     });
 
     // Create OTP
@@ -82,30 +82,30 @@ export async function sendCode(req: Request, response: Response) {
       where: {
         contact_id: user.id,
         created_at: {
-          gte: new Date(new Date().getTime() - 30 * 1000)
-        }
-      }
+          gte: new Date(new Date().getTime() - 30 * 1000),
+        },
+      },
     });
 
     if (otpExists) {
       return response.json({
         success: false,
-        message: 'Puedes solicitar un nuevo código en 30 segundos'
+        message: 'Puedes solicitar un nuevo código en 30 segundos',
       });
     }
 
     // Store OTP
     await prisma.otp.upsert({
       where: {
-        contact_id: user.id
+        contact_id: user.id,
       },
       update: {
-        code: otp
+        code: otp,
       },
       create: {
         contact_id: user.id,
-        code: otp
-      }
+        code: otp,
+      },
     });
 
     await axios.post(
@@ -118,7 +118,7 @@ export async function sendCode(req: Request, response: Response) {
         template: {
           name: 'otp',
           language: {
-            code: 'es'
+            code: 'es',
           },
           components: [
             {
@@ -126,9 +126,9 @@ export async function sendCode(req: Request, response: Response) {
               parameters: [
                 {
                   type: 'text',
-                  text: otp
-                }
-              ]
+                  text: otp,
+                },
+              ],
             },
             {
               type: 'button',
@@ -137,36 +137,36 @@ export async function sendCode(req: Request, response: Response) {
               parameters: [
                 {
                   type: 'text',
-                  text: otp
-                }
-              ]
-            }
-          ]
-        }
+                  text: otp,
+                },
+              ],
+            },
+          ],
+        },
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`
-        }
+          Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+        },
       }
     );
 
     return response.json({
       success: true,
-      message: 'Código enviado por WhatsApp'
+      message: 'Código enviado por WhatsApp',
     });
   } catch (error) {
     await handleError({
       error,
       userId: JSON.stringify(body),
       endpoint: 'auth.send-code.post',
-      message: 'Error in send code'
+      message: 'Error in send code',
     });
 
     return response.status(500).json({
       success: false,
-      message: 'Error al enviar el código'
+      message: 'Error al enviar el código',
     });
   }
 }
@@ -180,7 +180,7 @@ export async function login(req: Request, response: Response) {
     if (!phoneNumber || !otp) {
       return response.json({
         success: false,
-        message: 'Debes ingresar un número de teléfono y código'
+        message: 'Debes ingresar un número de teléfono y código',
       });
     }
 
@@ -189,7 +189,7 @@ export async function login(req: Request, response: Response) {
     if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
       return response.json({
         success: false,
-        message: 'Ingresa un número de teléfono válido'
+        message: 'Ingresa un número de teléfono válido',
       });
     }
 
@@ -203,10 +203,10 @@ export async function login(req: Request, response: Response) {
             name: true,
             image: {
               select: {
-                url: true
-              }
-            }
-          }
+                url: true,
+              },
+            },
+          },
         },
         income_categories: {
           select: {
@@ -214,45 +214,45 @@ export async function login(req: Request, response: Response) {
             name: true,
             image: {
               select: {
-                url: true
-              }
-            }
-          }
+                url: true,
+              },
+            },
+          },
         },
         _count: {
           select: {
-            expenses: true
-          }
+            expenses: true,
+          },
         },
         expenses: {
           distinct: ['currency_code'],
           where: {
             created_at: {
-              gte: new Date(new Date().setDate(new Date().getDate() - 30)) // last 30 days
-            }
+              gte: new Date(new Date().setDate(new Date().getDate() - 30)), // last 30 days
+            },
           },
           select: {
-            currency_code: true
-          }
+            currency_code: true,
+          },
         },
         transaction_tags: {
           select: {
             id: true,
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
 
     if (!user) {
       return response.json({
         success: false,
-        message: 'Usuario no encontrado'
+        message: 'Usuario no encontrado',
       });
     }
 
     const storedOtp = await prisma.otp.findUnique({
-      where: { contact_id: user.id }
+      where: { contact_id: user.id },
     });
 
     if (!storedOtp || storedOtp.code !== otp) {
@@ -261,7 +261,7 @@ export async function login(req: Request, response: Response) {
         .json({ success: false, message: 'El código ingresado es incorrecto' });
     } else {
       await prisma.otp.delete({
-        where: { contact_id: user.id }
+        where: { contact_id: user.id },
       });
     }
 
@@ -280,7 +280,6 @@ export async function login(req: Request, response: Response) {
       {
         id: user.id,
         phone: user.phone_number,
-        encryption_key: Buffer.from(permanentKey).toString('hex')
       },
       env.JWT_SECRET as string,
       { expiresIn: '30d' }
@@ -290,7 +289,7 @@ export async function login(req: Request, response: Response) {
       distinct_id: user.phone_number,
       channel: 'web',
       login_date: new Date(),
-      mp_country_code: user.country_code
+      mp_country_code: user.country_code,
     });
 
     return response.json({
@@ -310,29 +309,29 @@ export async function login(req: Request, response: Response) {
           expense_categories: user.expense_categories.map((category) => ({
             value: category.id,
             label: category.name,
-            image_url: category.image?.url
+            image_url: category.image?.url,
           })),
           income_categories: user.income_categories.map((category) => ({
             value: category.id,
             label: category.name,
-            image_url: category.image?.url
+            image_url: category.image?.url,
           })),
           tags: user.transaction_tags.map((tag) => ({
             id: tag.id,
-            name: tag.name
+            name: tag.name,
           })),
           expenses_count: user._count.expenses,
-          used_currencies: usedCurrencies
+          used_currencies: usedCurrencies,
         },
-        encryption_key: Buffer.from(permanentKey).toString('hex')
+        encryption_key: Buffer.from(permanentKey).toString('hex'),
       },
-      message: 'Inicio de sesión exitoso'
+      message: 'Inicio de sesión exitoso',
     });
   } catch (error) {
     console.error('Error in login:', error);
     return response.json({
       success: false,
-      message: 'Error al iniciar sesión'
+      message: 'Error al iniciar sesión',
     });
   }
 }
@@ -343,11 +342,11 @@ export const getMe = async (req: AuthRequest, res: Response) => {
     channel: 'web',
     login_date: new Date(),
     mp_country_code: req.user.country_code,
-    country_code: req.user.country_code
+    country_code: req.user.country_code,
   });
 
   return res.json({
     data: req.user,
-    message: 'User data fetched successfully'
+    message: 'User data fetched successfully',
   });
 };

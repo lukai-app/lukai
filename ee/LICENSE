@@ -2,12 +2,13 @@ LukAI Enterprise License
 
 Copyright (c) 2024 LukAI
 
-This license governs the use of the accompanying software in the `/ee` directory of the LukAI repository. 
+This license governs the use of the accompanying software in the `/ee` directory of the LukAI repository.
 
 GRANT OF LICENSE:
 Subject to the terms and conditions of this license, LukAI grants you a non-exclusive, non-transferable license to use the software in the `/ee` directory for commercial purposes, provided you have a valid commercial license agreement with LukAI.
 
 RESTRICTIONS:
+
 1. You may not distribute, sublicense, or make the software available to third parties without explicit written permission from LukAI.
 2. You may not remove or alter any copyright notices or license terms.
 3. You may not reverse engineer, decompile, or disassemble the software.
@@ -19,4 +20,4 @@ This license terminates automatically if you breach any of its terms or if your 
 NO WARRANTY:
 The software is provided "as is" without warranty of any kind.
 
-For licensing inquiries, contact: licensing@lukai.com 
+For licensing inquiries, contact: TDB

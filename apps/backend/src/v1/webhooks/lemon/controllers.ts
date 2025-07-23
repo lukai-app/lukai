@@ -8,7 +8,7 @@ import {
   SubscriptionObject,
   SubscriptionInvoiceObject,
   WebhookEvent,
-  dictionary
+  dictionary,
 } from '../../../lib/tools/lemon';
 import { upsertUser } from '../../../utils/upsertUser';
 import { sendTemplate } from '../../../lib/tools/whatsapp';
@@ -39,7 +39,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
       const signatureArray = new Uint8Array(signature);
 
       if (!crypto.timingSafeEqual(digestArray, signatureArray)) {
-        //throw new Error('Invalid signature.');
+        throw new Error('Invalid signature.');
         console.log('Invalid signature.');
       }
     } else {
@@ -75,7 +75,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
         renews_at,
         ends_at,
         card_brand,
-        card_last_four
+        card_last_four,
       } = createdData.attributes;
 
       // validate that meta.custom_data.phone_number exists
@@ -88,13 +88,13 @@ export async function postLemonWebhook(request: Request, response: Response) {
         : `+${body.meta.custom_data.phone_number}`;
 
       let contact = await prisma.contact.findUnique({
-        where: { phone_number: phoneNumber }
+        where: { phone_number: phoneNumber },
       });
 
       if (!contact) {
         contact = await upsertUser({
           phoneNumber,
-          source: 'lemon'
+          source: 'lemon',
         });
       }
 
@@ -111,33 +111,33 @@ export async function postLemonWebhook(request: Request, response: Response) {
           renews_at: new Date(renews_at),
           ends_at: ends_at ? new Date(ends_at) : null,
           card_brand: card_brand,
-          card_last_four: card_last_four
-        }
+          card_last_four: card_last_four,
+        },
       });
 
       await sendTemplate({
         to: phoneNumber,
         templateName: 'subscription_update_notification',
-        params: [contact.name ?? '🙌', dictionary['ES'].subscription_created]
+        params: [contact.name ?? '🙌', dictionary['ES'].subscription_created],
       });
 
       await submitAgentMessage({
         chatId: contact.chatId,
         content: dictionary['ES'].subscription_created,
-        user: contact
+        user: contact,
       });
 
       sendTemplate({
         to: env.WHATSAPP_ADMIN_NUMBER,
         templateName: 'admin_suscripcion_evento',
-        params: [body.meta.event_name, contact.phone_number]
+        params: [body.meta.event_name, contact.phone_number],
       });
 
       mixpanelServer.track('subscription_created', {
         distinct_id: phoneNumber,
         email: user_email,
         mp_country_code: contact.country_code,
-        country_code: contact.country_code
+        country_code: contact.country_code,
       });
     } else if (
       body.meta.event_name === WebhookEvent.subscription_updated ||
@@ -158,15 +158,15 @@ export async function postLemonWebhook(request: Request, response: Response) {
         renews_at,
         ends_at,
         card_brand,
-        card_last_four
+        card_last_four,
       } = updatedData.attributes;
 
       // check if subscription exists
       let subscription = await prisma.subscription.findUnique({
         where: { subscription_id: subscriptionId },
         include: {
-          contact: true
-        }
+          contact: true,
+        },
       });
 
       if (!subscription) {
@@ -185,11 +185,11 @@ export async function postLemonWebhook(request: Request, response: Response) {
           renews_at: renews_at ? new Date(renews_at) : null,
           ends_at: ends_at ? new Date(ends_at) : null,
           card_brand: card_brand,
-          card_last_four: card_last_four
+          card_last_four: card_last_four,
         },
         include: {
-          contact: true
-        }
+          contact: true,
+        },
       });
 
       if (body.meta.event_name === WebhookEvent.subscription_updated) {
@@ -198,28 +198,28 @@ export async function postLemonWebhook(request: Request, response: Response) {
           templateName: 'subscription_update_notification',
           params: [
             subscription.contact.name ?? '🙌',
-            dictionary['ES'][body.meta.event_name]
-          ]
+            dictionary['ES'][body.meta.event_name],
+          ],
         });
 
         await submitAgentMessage({
           chatId: subscription.contact.chatId,
           content: dictionary['ES'][body.meta.event_name],
-          user: subscription.contact
+          user: subscription.contact,
         });
       }
 
       sendTemplate({
         to: env.WHATSAPP_ADMIN_NUMBER,
         templateName: 'admin_suscripcion_evento',
-        params: [body.meta.event_name, subscription.contact.phone_number]
+        params: [body.meta.event_name, subscription.contact.phone_number],
       });
 
       mixpanelServer.track(`${body.meta.event_name}`, {
         distinct_id: subscription.contact.phone_number,
         email: user_email,
         mp_country_code: subscription.contact.country_code,
-        country_code: subscription.contact.country_code
+        country_code: subscription.contact.country_code,
       });
     } else if (
       body.meta.event_name === WebhookEvent.subscription_payment_failed
@@ -228,7 +228,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
       sendTemplate({
         to: env.WHATSAPP_ADMIN_NUMBER,
         templateName: 'admin_suscripcion_evento',
-        params: [body.meta.event_name, body.meta.custom_data.phone_number]
+        params: [body.meta.event_name, body.meta.custom_data.phone_number],
       });
     } else if (
       body.meta.event_name === WebhookEvent.subscription_payment_success
@@ -238,7 +238,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
           ? body.meta.custom_data.phone_number
           : `+${body.meta.custom_data.phone_number}`,
         email: body.data.attributes.user_email,
-        fecha_hora: new Date()
+        fecha_hora: new Date(),
       });
 
       const celebrationMessages = [
@@ -248,7 +248,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
         "💫 There's a story behind every user who pays. Today, another story crosses paths with ours.",
         "💡 When you see this, remember: someone chose to invest in what you've built with your own hands. What a gift.",
         "🧠 The idea that was born in your head just became a real transaction. It's magic, but it's also hard work.",
-        "❤️ Today, someone decided that what you've created matters to them. There's no better metric than that."
+        "❤️ Today, someone decided that what you've created matters to them. There's no better metric than that.",
       ];
 
       // payment success
@@ -263,8 +263,8 @@ export async function postLemonWebhook(request: Request, response: Response) {
             : '',
           celebrationMessages[
             Math.floor(Math.random() * celebrationMessages.length)
-          ]
-        ]
+          ],
+        ],
       });
     } else if (
       body.meta.event_name === WebhookEvent.subscription_payment_recovered
@@ -273,7 +273,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
       sendTemplate({
         to: env.WHATSAPP_ADMIN_NUMBER,
         templateName: 'admin_suscripcion_evento',
-        params: [body.meta.event_name, body.meta.custom_data.phone_number]
+        params: [body.meta.event_name, body.meta.custom_data.phone_number],
       });
     } else if (
       body.meta.event_name === WebhookEvent.subscription_payment_refunded
@@ -282,7 +282,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
       sendTemplate({
         to: env.WHATSAPP_ADMIN_NUMBER,
         templateName: 'admin_suscripcion_evento',
-        params: [body.meta.event_name, body.meta.custom_data.phone_number]
+        params: [body.meta.event_name, body.meta.custom_data.phone_number],
       });
     } else {
       throw new Error(
@@ -291,7 +291,7 @@ export async function postLemonWebhook(request: Request, response: Response) {
     }
 
     return response.json({
-      success: true
+      success: true,
     });
   } catch (error) {
     handleError({
@@ -299,11 +299,11 @@ export async function postLemonWebhook(request: Request, response: Response) {
       userId: undefined,
       endpoint: 'webhooks.lemon',
       message:
-        'Error at webhooks.lemon with body: ' + JSON.stringify(request.body)
+        'Error at webhooks.lemon with body: ' + JSON.stringify(request.body),
     });
 
     return response.json({
-      success: false
+      success: false,
     });
   }
 }
