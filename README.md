@@ -2,18 +2,19 @@
 
 <div align="center">
   <img src="https://lukai.com/logo.png" alt="LukAI Logo" width="120" height="120">
-  <h3>Open-source AI scheduling infrastructure</h3>
-  <p>The open-core scheduling infrastructure for absolutely everyone.</p>
+  <h3>Open-source AI expense tracking platform</h3>
+  <p>The intelligent expense tracker that understands natural language.</p>
 </div>
 
 ## 🚀 About LukAI
 
-LukAI is an open-core AI-powered scheduling platform that provides:
+LukAI is an open-source AI-powered expense tracking platform that provides:
 
-- **Smart Scheduling**: AI-powered meeting scheduling and optimization
-- **Multi-Platform**: Web app, mobile app, and API
+- **WhatsApp Integration**: Track expenses by simply messaging "I spent $50 on groceries" to our intelligent bot
+- **Natural Language Processing**: Understand and categorize expenses from plain English descriptions
+- **Smart Analytics**: Get insights with monthly/yearly summaries, category breakdowns, and spending trends
+- **Multi-Platform**: Web dashboard, mobile app, and API
 - **Open Source**: Core features available under AGPLv3
-- **Enterprise Ready**: Commercial features for scaling businesses
 
 ## 📋 Table of Contents
 
@@ -57,27 +58,28 @@ lukai/
 
 ## 📄 License
 
-LukAI uses a dual licensing approach:
+LukAI is open-source software licensed under AGPLv3:
 
 ### Open Source (AGPLv3)
 
-- All code outside the `/ee` directory
-- Core scheduling functionality
-- Basic AI features
+- All core expense tracking functionality
+- WhatsApp bot integration
+- Natural language processing
+- Analytics dashboard
 - API and integrations
 - Mobile and web applications
 
-### Commercial License
+### Enterprise Features (Coming Soon)
 
-- Code in the `/ee` directory
-- Enterprise features (coming soon)
-- Advanced AI capabilities
-- White-labeling options
+- Advanced analytics and reporting
+- Team collaboration features
+- Receipt image processing and OCR
+- Custom integrations
 - Priority support
 
-> **Important**: If you're using LukAI in a SaaS product or modifying the code, the AGPLv3 license requires you to open-source your changes. For commercial use without open-sourcing, contact us about enterprise licensing.
+> **Important**: If you're using LukAI in a SaaS product or modifying the code, the AGPLv3 license requires you to open-source your changes. For commercial use without open-sourcing, contact us about licensing options.
 
-For commercial licensing inquiries: licensing@lukai.com
+For commercial licensing inquiries: TDB
 
 ## 🚦 Getting Started
 
@@ -211,18 +213,17 @@ Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 
 Looking for enterprise features, support, or custom integrations?
 
-- 📧 Email: enterprise@lukai.com
-- 🌐 Website: https://lukai.com/enterprise
-- 📅 Book a call: https://lukai.com/demo
+- 📧 Email: TBD
+- 🌐 Website: TBD
+- 📅 Book a call: TBD
 
 ---
 
 <div align="center">
   <p>Built with ❤️ by the LukAI team</p>
   <p>
-    <a href="https://lukai.com">Website</a> •
-    <a href="https://docs.lukai.com">Documentation</a> •
-    <a href="https://discord.gg/lukai">Discord</a> •
-    <a href="https://twitter.com/lukai">Twitter</a>
+    <a href="https://lukai.app">Website</a> •
+    <a href="https://linkedin.com/company/lukai">LinkedIn</a> •
+    <a href="https://x.com/lukai">X</a>
   </p>
 </div>
