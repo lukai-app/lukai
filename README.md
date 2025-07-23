@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="https://lukai.com/logo.png" alt="LukAI Logo" width="120" height="120">
-  <h3>Open-source AI expense tracking platform</h3>
+  <h3>Open-source AI expense tracking platform (Launch in progress)</h3> 
   <p>The intelligent expense tracker that understands natural language.</p>
 </div>
 
