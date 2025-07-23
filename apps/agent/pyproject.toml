@@ -4,7 +4,6 @@ version = "1.0.0"
 description = "LukAI Python Agent Service"
 authors = ["LukAI Team <hello@lukai.com>"]
 license = "AGPL-3.0"
-readme = "README.md"
 packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
