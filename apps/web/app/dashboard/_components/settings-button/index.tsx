@@ -117,7 +117,11 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
               funciones
             </h2>
             <div
-              ref={(el) => (sectionsRef.current['features'] = el)}
+              ref={(el) => {
+                if (el) {
+                  sectionsRef.current['features'] = el;
+                }
+              }}
               className="rounded-xl bg-secondary/30 overflow-hidden"
             >
               <div className="space-y-1">
@@ -154,7 +158,11 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
               región
             </h2>
             <div
-              ref={(el) => (sectionsRef.current['region'] = el)}
+              ref={(el) => {
+                if (el) {
+                  sectionsRef.current['region'] = el;
+                }
+              }}
               className="rounded-xl bg-secondary/30 overflow-hidden"
             >
               <div className="space-y-1">
@@ -186,7 +194,11 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
               más
             </h2>
             <div
-              ref={(el) => (sectionsRef.current['more'] = el)}
+              ref={(el) => {
+                if (el) {
+                  sectionsRef.current['more'] = el;
+                }
+              }}
               className="rounded-xl bg-secondary/30 overflow-hidden"
             >
               <div className="space-y-1">

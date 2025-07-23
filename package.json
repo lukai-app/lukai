@@ -27,7 +27,10 @@
     "ee/*"
   ],
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter='!@lukai/mobile'",
+    "build:all": "turbo run build",
+    "build:web": "turbo run build --filter='@lukai/web'",
+    "build:mobile": "turbo run build --filter='@lukai/mobile'",
     "dev": "turbo run dev",
     "dev:all": "turbo run dev",
     "lint": "turbo run lint",
