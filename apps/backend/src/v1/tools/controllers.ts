@@ -24,7 +24,7 @@ import {
   getBudget,
   setExpenseCategoryBudget,
   getBudgetByCategory,
-  getSavings
+  getSavings,
 } from '../webhooks/whatsapp/tools';
 import { handleError } from '../../utils/handleError';
 import { decryptPermanentKey } from '../../utils/encryption';
@@ -35,7 +35,7 @@ import { normalizePhone } from '../../lib/helpers/normalizePhone';
 import {
   countryCodeToLanguageCode,
   countryCodeToCurrencyCode,
-  countryCodeToTimezone
+  countryCodeToTimezone,
 } from '../../lib/helpers/currency';
 import clm from 'country-locale-map';
 
@@ -51,20 +51,20 @@ export const callForCustomerSupportController = async (
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.callForCustomerSupportController',
-      message: 'Error in tools.callForCustomerSupportController'
+      message: 'Error in tools.callForCustomerSupportController',
     });
 
     return res.status(500).json({
       success: false,
-      message: 'Error al llamar al soporte'
+      message: 'Error al llamar al soporte',
     });
   }
 };
@@ -81,23 +81,23 @@ export const saveUserFeedbackController = async (
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.saveUserFeedbackController',
-      message: 'Error in tools.saveUserFeedbackController'
+      message: 'Error in tools.saveUserFeedbackController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al guardar el feedback',
       data: {
-        tool_response: 'Error al guardar el feedback'
-      }
+        tool_response: 'Error al guardar el feedback',
+      },
     });
   }
 };
@@ -111,11 +111,11 @@ export const registerExpensesController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -123,8 +123,8 @@ export const registerExpensesController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -136,29 +136,29 @@ export const registerExpensesController = async (
     const result = await registerExpenses({
       userPhoneNumber: phoneNumber,
       expenses,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.registerExpensesController',
-      message: 'Error in tools.registerExpensesController'
+      message: 'Error in tools.registerExpensesController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al registrar los gastos',
       data: {
-        tool_response: 'Error al registrar los gastos'
-      }
+        tool_response: 'Error al registrar los gastos',
+      },
     });
   }
 };
@@ -174,29 +174,29 @@ export const createExpenseCategoryController = async (
       userPhoneNumber: phoneNumber,
       name,
       key,
-      description
+      description,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.createExpenseCategoryController',
-      message: 'Error in tools.createExpenseCategoryController'
+      message: 'Error in tools.createExpenseCategoryController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al crear la categoría de gasto',
       data: {
-        tool_response: 'Error al crear la categoría de gasto'
-      }
+        tool_response: 'Error al crear la categoría de gasto',
+      },
     });
   }
 };
@@ -208,11 +208,11 @@ export const getSpendingController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -220,8 +220,8 @@ export const getSpendingController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -236,29 +236,29 @@ export const getSpendingController = async (req: Request, res: Response) => {
       currencyCode,
       dateFrom,
       dateTo,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getSpendingController',
-      message: 'Error in tools.getSpendingController'
+      message: 'Error in tools.getSpendingController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener los gastos',
       data: {
-        tool_response: 'Error al obtener los gastos'
-      }
+        tool_response: 'Error al obtener los gastos',
+      },
     });
   }
 };
@@ -270,11 +270,11 @@ export const findSpendingsController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -282,8 +282,8 @@ export const findSpendingsController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -298,29 +298,29 @@ export const findSpendingsController = async (req: Request, res: Response) => {
       currencyCode,
       dateFrom,
       dateTo,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.findSpendingsController',
-      message: 'Error in tools.findSpendingsController'
+      message: 'Error in tools.findSpendingsController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener los gastos',
       data: {
-        tool_response: 'Error al obtener los gastos'
-      }
+        tool_response: 'Error al obtener los gastos',
+      },
     });
   }
 };
@@ -337,23 +337,23 @@ export const getCustomerBillingPortalLinkController = async (
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getCustomerBillingPortalLinkController',
-      message: 'Error in tools.getCustomerBillingPortalLinkController'
+      message: 'Error in tools.getCustomerBillingPortalLinkController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener el link de facturación',
       data: {
-        tool_response: 'Error al obtener el link de facturación'
-      }
+        tool_response: 'Error al obtener el link de facturación',
+      },
     });
   }
 };
@@ -370,23 +370,23 @@ export const getCheckoutPaymentLinkController = async (
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getCheckoutPaymentLinkController',
-      message: 'Error in tools.getCheckoutPaymentLinkController'
+      message: 'Error in tools.getCheckoutPaymentLinkController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener el link de pago',
       data: {
-        tool_response: 'Error al obtener el link de pago'
-      }
+        tool_response: 'Error al obtener el link de pago',
+      },
     });
   }
 };
@@ -401,11 +401,11 @@ export const createFinancialAccountController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -413,8 +413,8 @@ export const createFinancialAccountController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -430,29 +430,29 @@ export const createFinancialAccountController = async (
       key,
       balance,
       currencyCode,
-      encryptionKey
+      encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.createFinancialAccountController',
-      message: 'Error in tools.createFinancialAccountController'
+      message: 'Error in tools.createFinancialAccountController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al crear la cuenta financiera',
       data: {
-        tool_response: 'Error al crear la cuenta financiera'
-      }
+        tool_response: 'Error al crear la cuenta financiera',
+      },
     });
   }
 };
@@ -466,11 +466,11 @@ export const registerIncomesController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -478,8 +478,8 @@ export const registerIncomesController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -491,29 +491,29 @@ export const registerIncomesController = async (
     const result = await registerIncomes({
       userPhoneNumber: phoneNumber,
       incomes,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.registerIncomesController',
-      message: 'Error in tools.registerIncomesController'
+      message: 'Error in tools.registerIncomesController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al registrar los ingresos',
       data: {
-        tool_response: 'Error al registrar los ingresos'
-      }
+        tool_response: 'Error al registrar los ingresos',
+      },
     });
   }
 };
@@ -529,29 +529,29 @@ export const createIncomeCategoryController = async (
       userPhoneNumber: phoneNumber,
       name,
       key,
-      description
+      description,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.createIncomeCategoryController',
-      message: 'Error in tools.createIncomeCategoryController'
+      message: 'Error in tools.createIncomeCategoryController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al crear la categoría de ingreso',
       data: {
-        tool_response: 'Error al crear la categoría de ingreso'
-      }
+        tool_response: 'Error al crear la categoría de ingreso',
+      },
     });
   }
 };
@@ -563,11 +563,11 @@ export const getIncomeController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -575,8 +575,8 @@ export const getIncomeController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -591,29 +591,29 @@ export const getIncomeController = async (req: Request, res: Response) => {
       currencyCode,
       dateFrom,
       dateTo,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getIncomeController',
-      message: 'Error in tools.getIncomeController'
+      message: 'Error in tools.getIncomeController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener los ingresos',
       data: {
-        tool_response: 'Error al obtener los ingresos'
-      }
+        tool_response: 'Error al obtener los ingresos',
+      },
     });
   }
 };
@@ -625,11 +625,11 @@ export const findIncomesController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -637,8 +637,8 @@ export const findIncomesController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -653,29 +653,29 @@ export const findIncomesController = async (req: Request, res: Response) => {
       currencyCode,
       dateFrom,
       dateTo,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.findIncomesController',
-      message: 'Error in tools.findIncomesController'
+      message: 'Error in tools.findIncomesController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener los ingresos',
       data: {
-        tool_response: 'Error al obtener los ingresos'
-      }
+        tool_response: 'Error al obtener los ingresos',
+      },
     });
   }
 };
@@ -683,6 +683,8 @@ export const findIncomesController = async (req: Request, res: Response) => {
 export const upsertUserController = async (req: Request, res: Response) => {
   try {
     const { phoneNumber, contactName } = req.body;
+
+    console.log('Upserting user:', { phoneNumber, contactName });
 
     const parsedPhoneNumber = parsePhoneNumber(
       normalizePhone(`${phoneNumber.startsWith('+') ? '' : '+'}${phoneNumber}`)
@@ -699,7 +701,7 @@ export const upsertUserController = async (req: Request, res: Response) => {
       ? countryCodeToLanguageCode(countryCode)
       : 'es';
     const currencyCode = countryCode
-      ? countryCodeToCurrencyCode(countryCode) ?? 'USD'
+      ? (countryCodeToCurrencyCode(countryCode) ?? 'USD')
       : 'USD';
     const locale = countryCode
       ? clm.getLocaleByAlpha2(countryCode)
@@ -707,7 +709,7 @@ export const upsertUserController = async (req: Request, res: Response) => {
         : 'es-PE'
       : 'es-PE';
     const timezone = countryCode
-      ? countryCodeToTimezone(countryCode) ?? 'America/Lima'
+      ? (countryCodeToTimezone(countryCode) ?? 'America/Lima')
       : 'America/Lima';
 
     const user = await upsertUser({
@@ -718,27 +720,27 @@ export const upsertUserController = async (req: Request, res: Response) => {
       favorite_locale: locale,
       favorite_timezone: timezone,
       country_code: countryCode,
-      source: 'whatsapp'
+      source: 'whatsapp',
     });
 
     return res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.upsertUserController',
-      message: 'Error in tools.upsertUserController'
+      message: 'Error in tools.upsertUserController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al crear/actualizar el usuario',
       data: {
-        tool_response: 'Error al crear/actualizar el usuario'
-      }
+        tool_response: 'Error al crear/actualizar el usuario',
+      },
     });
   }
 };
@@ -752,11 +754,11 @@ export const transferMoneyBetweenAccountsController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -764,8 +766,8 @@ export const transferMoneyBetweenAccountsController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -777,29 +779,29 @@ export const transferMoneyBetweenAccountsController = async (
     const result = await transferMoneyBetweenAccounts({
       userPhoneNumber: phoneNumber,
       transfers,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.transferMoneyBetweenAccountsController',
-      message: 'Error in tools.transferMoneyBetweenAccountsController'
+      message: 'Error in tools.transferMoneyBetweenAccountsController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al transferir dinero entre cuentas',
       data: {
-        tool_response: 'Error al transferir dinero entre cuentas'
-      }
+        tool_response: 'Error al transferir dinero entre cuentas',
+      },
     });
   }
 };
@@ -813,16 +815,16 @@ export const getTransfersController = async (req: Request, res: Response) => {
       amountFrom,
       amountTo,
       dateFrom,
-      dateTo
+      dateTo,
     } = req.body;
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -830,8 +832,8 @@ export const getTransfersController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -848,29 +850,29 @@ export const getTransfersController = async (req: Request, res: Response) => {
       amountTo,
       dateFrom,
       dateTo,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getTransfersController',
-      message: 'Error in tools.getTransfersController'
+      message: 'Error in tools.getTransfersController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener las transferencias',
       data: {
-        tool_response: 'Error al obtener las transferencias'
-      }
+        tool_response: 'Error al obtener las transferencias',
+      },
     });
   }
 };
@@ -884,16 +886,16 @@ export const findTransfersController = async (req: Request, res: Response) => {
       amountFrom,
       amountTo,
       dateFrom,
-      dateTo
+      dateTo,
     } = req.body;
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -901,8 +903,8 @@ export const findTransfersController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -919,29 +921,29 @@ export const findTransfersController = async (req: Request, res: Response) => {
       amountTo,
       dateFrom,
       dateTo,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.findTransfersController',
-      message: 'Error in tools.findTransfersController'
+      message: 'Error in tools.findTransfersController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener las transferencias',
       data: {
-        tool_response: 'Error al obtener las transferencias'
-      }
+        tool_response: 'Error al obtener las transferencias',
+      },
     });
   }
 };
@@ -955,11 +957,11 @@ export const getAccountBalanceController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -967,8 +969,8 @@ export const getAccountBalanceController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -980,29 +982,29 @@ export const getAccountBalanceController = async (
     const result = await getAccountBalance({
       userPhoneNumber: phoneNumber,
       accountKey,
-      encryptionKey: encryptionKey
+      encryptionKey: encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getAccountBalanceController',
-      message: 'Error in tools.getAccountBalanceController'
+      message: 'Error in tools.getAccountBalanceController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener el saldo de la cuenta',
       data: {
-        tool_response: 'Error al obtener el saldo de la cuenta'
-      }
+        tool_response: 'Error al obtener el saldo de la cuenta',
+      },
     });
   }
 };
@@ -1019,23 +1021,23 @@ export const createTransactionTagsController = async (
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.createTransactionTagsController',
-      message: 'Error in tools.createTransactionTagsController'
+      message: 'Error in tools.createTransactionTagsController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al crear las etiquetas de transacción',
       data: {
-        tool_response: 'Error al crear las etiquetas de transacción'
-      }
+        tool_response: 'Error al crear las etiquetas de transacción',
+      },
     });
   }
 };
@@ -1046,11 +1048,11 @@ export const setBudgetController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -1058,8 +1060,8 @@ export const setBudgetController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -1074,29 +1076,29 @@ export const setBudgetController = async (req: Request, res: Response) => {
       year,
       currencyCode,
       month,
-      encryptionKey
+      encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.setBudgetController',
-      message: 'Error in tools.setBudgetController'
+      message: 'Error in tools.setBudgetController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al establecer el presupuesto',
       data: {
-        tool_response: 'Error al establecer el presupuesto'
-      }
+        tool_response: 'Error al establecer el presupuesto',
+      },
     });
   }
 };
@@ -1107,11 +1109,11 @@ export const getBudgetController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -1119,8 +1121,8 @@ export const getBudgetController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -1134,29 +1136,29 @@ export const getBudgetController = async (req: Request, res: Response) => {
       year,
       month,
       currencyCode,
-      encryptionKey
+      encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getBudgetController',
-      message: 'Error in tools.getBudgetController'
+      message: 'Error in tools.getBudgetController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener el presupuesto',
       data: {
-        tool_response: 'Error al obtener el presupuesto'
-      }
+        tool_response: 'Error al obtener el presupuesto',
+      },
     });
   }
 };
@@ -1171,11 +1173,11 @@ export const setExpenseCategoryBudgetController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -1183,8 +1185,8 @@ export const setExpenseCategoryBudgetController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -1200,21 +1202,21 @@ export const setExpenseCategoryBudgetController = async (
       year,
       currencyCode,
       month,
-      encryptionKey
+      encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.setExpenseCategoryBudgetController',
-      message: 'Error in tools.setExpenseCategoryBudgetController'
+      message: 'Error in tools.setExpenseCategoryBudgetController',
     });
 
     return res.status(500).json({
@@ -1222,8 +1224,8 @@ export const setExpenseCategoryBudgetController = async (
       message: 'Error al establecer el presupuesto de la categoría de gasto',
       data: {
         tool_response:
-          'Error al establecer el presupuesto de la categoría de gasto'
-      }
+          'Error al establecer el presupuesto de la categoría de gasto',
+      },
     });
   }
 };
@@ -1237,11 +1239,11 @@ export const getBudgetByCategoryController = async (
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -1249,8 +1251,8 @@ export const getBudgetByCategoryController = async (
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -1265,21 +1267,21 @@ export const getBudgetByCategoryController = async (
       year,
       month,
       currencyCode,
-      encryptionKey
+      encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getBudgetByCategoryController',
-      message: 'Error in tools.getBudgetByCategoryController'
+      message: 'Error in tools.getBudgetByCategoryController',
     });
 
     return res.status(500).json({
@@ -1287,8 +1289,8 @@ export const getBudgetByCategoryController = async (
       message: 'Error al obtener el presupuesto de la categoría de gasto',
       data: {
         tool_response:
-          'Error al obtener el presupuesto de la categoría de gasto'
-      }
+          'Error al obtener el presupuesto de la categoría de gasto',
+      },
     });
   }
 };
@@ -1299,11 +1301,11 @@ export const getSavingsController = async (req: Request, res: Response) => {
 
     const user = await prisma.contact.findUnique({
       where: {
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       },
       select: {
-        encryption_key: true
-      }
+        encryption_key: true,
+      },
     });
 
     if (!user) {
@@ -1311,8 +1313,8 @@ export const getSavingsController = async (req: Request, res: Response) => {
         success: false,
         message: 'Usuario no encontrado',
         data: {
-          tool_response: 'Usuario no encontrado'
-        }
+          tool_response: 'Usuario no encontrado',
+        },
       });
     }
 
@@ -1324,29 +1326,29 @@ export const getSavingsController = async (req: Request, res: Response) => {
     const result = await getSavings({
       phoneNumber,
       savingsAccountsKeys,
-      encryptionKey
+      encryptionKey,
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        tool_response: result
-      }
+        tool_response: result,
+      },
     });
   } catch (error: any) {
     handleError({
       error,
       userId: req.body.phoneNumber,
       endpoint: 'tools.getSavingsController',
-      message: 'Error in tools.getSavingsController'
+      message: 'Error in tools.getSavingsController',
     });
 
     return res.status(500).json({
       success: false,
       message: 'Error al obtener los ahorros',
       data: {
-        tool_response: 'Error al obtener los ahorros'
-      }
+        tool_response: 'Error al obtener los ahorros',
+      },
     });
   }
 };

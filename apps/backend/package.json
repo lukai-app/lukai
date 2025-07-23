@@ -7,7 +7,7 @@
   "license": "AGPL-3.0",
   "author": "LukAI Team",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts,.tsx",

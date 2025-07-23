@@ -248,6 +248,7 @@ class GetSavingsParams(BaseModel):
 class MainAPIService:
     def __init__(self):
         self.base_url = settings.MAIN_API_URL.rstrip("/")
+        logger.info(f"🌐 Main API URL: {self.base_url}")
         self.headers = {
             "Authorization": f"Bearer {settings.AGENT_API_SECRET}",
             "Content-Type": "application/json",
@@ -595,6 +596,7 @@ class MainAPIService:
             phone_number: The user's phone number
             contact_name: Optional contact name from WhatsApp
         """
+        logger.info(f"🌐 Main API URL: {self.base_url}")
         return await self._make_request(
             endpoint="/v1/tools/upsert-user",
             payload={
