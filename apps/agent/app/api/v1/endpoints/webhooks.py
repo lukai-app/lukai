@@ -8,6 +8,7 @@ import logging
 import asyncio
 import hmac
 import hashlib
+import json
 from collections import defaultdict
 from datetime import datetime, timedelta
 from app.services.main_api_service import (
@@ -43,10 +44,13 @@ user_processing_lock = defaultdict(
     asyncio.Lock
 )  # Prevent concurrent processing per user
 
+# Track webhook requests to detect duplicates
+webhook_requests = {}  # Track webhook request signatures/hashes with timestamps
+
 
 # Cleanup old processed messages every hour to prevent memory leaks
 async def cleanup_processed_messages():
-    """Clean up old processed message IDs to prevent memory leaks"""
+    """Clean up old processed message IDs and webhook requests to prevent memory leaks"""
     while True:
         await asyncio.sleep(3600)  # Clean up every hour
 
@@ -61,9 +65,21 @@ async def cleanup_processed_messages():
         for msg_id in messages_to_remove:
             del processed_messages[msg_id]
 
-        if messages_to_remove:
+        # Remove webhook requests older than 1 hour
+        webhook_cutoff_time = datetime.now() - timedelta(hours=1)
+        webhook_requests_to_remove = [
+            req_hash
+            for req_hash, timestamp in webhook_requests.items()
+            if timestamp < webhook_cutoff_time
+        ]
+
+        for req_hash in webhook_requests_to_remove:
+            del webhook_requests[req_hash]
+
+        if messages_to_remove or webhook_requests_to_remove:
             logger.info(
-                f"Cleaned up {len(messages_to_remove)} old processed messages. Remaining: {len(processed_messages)}"
+                f"🧹 CLEANUP: Removed {len(messages_to_remove)} old messages and {len(webhook_requests_to_remove)} old webhook requests. "
+                f"Remaining: {len(processed_messages)} messages, {len(webhook_requests)} webhook requests"
             )
 
 
@@ -71,7 +87,9 @@ async def cleanup_processed_messages():
 cleanup_task_started = False
 
 
-def verify_webhook_signature(payload: bytes, signature: str, secret: str) -> bool:
+def verify_webhook_signature(
+    payload: bytes, signature: str | None, secret: str
+) -> bool:
     """
     Verify the webhook signature from Meta/WhatsApp.
 
@@ -84,19 +102,35 @@ def verify_webhook_signature(payload: bytes, signature: str, secret: str) -> boo
         bool: True if signature is valid, False otherwise
     """
     if not signature or not secret:
+        logger.warning(
+            f"🔐 SIGNATURE: Missing signature ({bool(signature)}) or secret ({bool(secret)})"
+        )
         return False
 
     # Remove 'sha256=' prefix if present
     if signature.startswith("sha256="):
         signature = signature[7:]
 
-    # Create HMAC signature
-    expected_signature = hmac.new(
-        secret.encode("utf-8"), payload, hashlib.sha256
-    ).hexdigest()
+    try:
+        # Create HMAC signature
+        expected_signature = hmac.new(
+            secret.encode("utf-8"), payload, hashlib.sha256
+        ).hexdigest()
 
-    # Compare signatures using secure comparison
-    return hmac.compare_digest(expected_signature, signature)
+        # Compare signatures using secure comparison
+        is_valid = hmac.compare_digest(expected_signature, signature)
+
+        if is_valid:
+            logger.info("✅ SIGNATURE: Webhook signature verified successfully")
+        else:
+            logger.warning(
+                f"❌ SIGNATURE: Invalid signature. Expected: {expected_signature[:8]}..., Got: {signature[:8]}..."
+            )
+
+        return is_valid
+    except Exception as e:
+        logger.error(f"❌ SIGNATURE: Error verifying signature: {str(e)}")
+        return False
 
 
 async def process_with_langgraph_retry(conversation, user_data, max_retries=3):
@@ -1247,9 +1281,30 @@ async def whatsapp_webhook(request: Request) -> Dict[str, Any]:
             )
 
         # Parse JSON body
-        import json
-
         body = json.loads(raw_body.decode())
+
+        # Create a hash of the webhook payload to detect duplicates
+        webhook_hash = hashlib.sha256(raw_body).hexdigest()
+        current_time = datetime.now()
+
+        # Check for duplicate webhook requests
+        if webhook_hash in webhook_requests:
+            time_diff = (current_time - webhook_requests[webhook_hash]).total_seconds()
+            logger.warning(
+                f"🔄 WEBHOOK DUPLICATE: Same webhook received {time_diff:.2f}s ago. Hash: {webhook_hash[:16]}..."
+            )
+            # Still process if it's been more than 30 seconds (could be legitimate retry)
+            if time_diff < 30:
+                logger.warning(
+                    f"⏭️ WEBHOOK: Skipping duplicate webhook (too recent: {time_diff:.2f}s)"
+                )
+                return {"status": "duplicate_skipped"}
+
+        # Record this webhook request
+        webhook_requests[webhook_hash] = current_time
+        logger.info(
+            f"📝 WEBHOOK: Recorded webhook hash: {webhook_hash[:16]}... Total tracked: {len(webhook_requests)}"
+        )
 
         if (
             body.get("entry")
@@ -1268,12 +1323,18 @@ async def whatsapp_webhook(request: Request) -> Dict[str, Any]:
             and body["entry"][0]["changes"][0].get("value")
             and body["entry"][0]["changes"][0]["value"].get("messages")
         ):
+            messages = body["entry"][0]["changes"][0]["value"]["messages"]
             logger.info(
-                f"✅ WEBHOOK: Valid webhook payload detected, starting async processing for {user_phone}"
+                f"✅ WEBHOOK: Valid webhook payload detected with {len(messages)} message(s), starting async processing for {user_phone}"
             )
+
+            # Log message IDs for tracking
+            message_ids = [msg.get("id", "unknown") for msg in messages]
+            logger.info(f"📨 WEBHOOK: Processing message IDs: {message_ids}")
+
             # Return 200 OK immediately to WhatsApp to prevent timeout retries
             # Process messages asynchronously in the background
-            asyncio.create_task(process_webhook_messages(body, user_phone))
+            asyncio.create_task(process_webhook_messages(body, user_phone or "unknown"))
 
             response_time = (
                 datetime.now() - webhook_received_at
@@ -1302,7 +1363,7 @@ async def whatsapp_webhook(request: Request) -> Dict[str, Any]:
         return {"status": "error"}
 
 
-async def process_webhook_messages(body: dict, user_phone: str = None):
+async def process_webhook_messages(body: dict, user_phone: str | None = None):
     """Process WhatsApp webhook messages asynchronously"""
     try:
         # Start cleanup task on first webhook processing
@@ -1380,7 +1441,7 @@ async def process_webhook_messages(body: dict, user_phone: str = None):
 
 
 async def process_individual_message(
-    message: dict, value: dict, user_phone: str = None
+    message: dict, value: dict, user_phone: str | None = None
 ):
     """Process an individual WhatsApp message and add it to the user's batch"""
     try:
@@ -1408,8 +1469,12 @@ async def process_individual_message(
                 contacts[0].get("profile", {}).get("name") if contacts else None
             )
 
+            if not message_data["from"]:
+                logger.error(f"❌ No phone number found in message {message_id}")
+                return
+
             user_response = await main_api_service.upsert_user(
-                message_data["from"], contact_name=contact_name
+                str(message_data["from"]), contact_name=contact_name
             )
             message_data["user"] = user_response.data
             logger.info(f"✅ User data fetched successfully for {message_from}")
@@ -1462,11 +1527,15 @@ async def process_individual_message(
             await process_audio_message(message, message_data)
 
         # Add processed message to user's batch
-        logger.info(f"📦 Adding message {message_id} to batch for user {message_from}")
-        await add_message_to_batch(message_data["from"], message_data)
+        if message_data.get("from"):
+            logger.info(
+                f"📦 Adding message {message_id} to batch for user {message_from}"
+            )
+            await add_message_to_batch(str(message_data["from"]), message_data)
 
     except Exception as e:
-        logger.error(f"❌ Error processing individual message {message_id}: {str(e)}")
+        msg_id = message.get("id", "unknown") if "message" in locals() else "unknown"
+        logger.error(f"❌ Error processing individual message {msg_id}: {str(e)}")
         await handle_error(
             error=e,
             user_id=user_phone,
