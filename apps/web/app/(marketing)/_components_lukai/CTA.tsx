@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { getWhatsappBotLinkWithMessage } from '@/lib/constants/chat';
 import { MessageCircle, ArrowRight, Sparkles } from 'lucide-react';
 
 const CTA = () => {
@@ -20,23 +21,29 @@ const CTA = () => {
             </h2>
 
             <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Join thousands of users who have simplified their financial
-              management with LukAI's intelligent WhatsApp integration.
+              We’re building the open-source AI financial tracker that thousands
+              will rely on—come be part of it.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button variant="default" size="lg" className="group">
-              <MessageCircle className="w-5 h-5" />
-              Start Free Trial
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button variant="outline" size="lg">
+            <a
+              href={getWhatsappBotLinkWithMessage('hola!! soy nuevo en la app')}
+              target="_blank"
+              className="hidden md:block"
+            >
+              <Button variant="default" size="lg" className="group">
+                <MessageCircle className="w-5 h-5" />
+                Start for free on WhatsApp
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </a>
+            {/* <Button variant="outline" size="lg">
               Watch Demo
-            </Button>
+            </Button> */}
           </div>
 
-          <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border">
+          {/* <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border">
             <div className="text-center">
               <div className="text-2xl lg:text-3xl font-bold text-lukai-primary">
                 10k+
@@ -57,7 +64,7 @@ const CTA = () => {
               </div>
               <div className="text-sm text-muted-foreground">Accuracy Rate</div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

@@ -5,26 +5,28 @@ const Footer = () => {
     product: [
       { name: 'Features', href: '#features' },
       { name: 'Pricing', href: '#pricing' },
-      { name: 'Documentation', href: '#' },
-      { name: 'API', href: '#' },
+      /* { name: 'Documentation', href: '#' },
+      { name: 'API', href: '#' }, */
     ],
-    company: [
+    /* company: [
       { name: 'About', href: '#about' },
       { name: 'Blog', href: '#' },
       { name: 'Careers', href: '#' },
       { name: 'Contact', href: '#' },
-    ],
+    ], */
     resources: [
-      { name: 'GitHub', href: '#' },
-      { name: 'Community', href: '#' },
-      { name: 'Support', href: '#' },
-      { name: 'Status', href: '#' },
+      { name: 'GitHub', href: 'https://github.com/lukai-app/lukai' },
+      /* { name: 'Community', href: '#' },
+      { name: 'Support', href: '#' }, */
+      //{ name: 'Status', href: '#' },
     ],
     legal: [
-      { name: 'Privacy Policy', href: '#' },
-      { name: 'Terms of Service', href: '#' },
-      { name: 'Cookie Policy', href: '#' },
-      { name: 'License', href: '#' },
+      { name: 'Privacy Policy', href: '/privacy.html' },
+      { name: 'Terms of Service', href: '/terms.html' },
+      {
+        name: 'License',
+        href: 'https://github.com/lukai-app/lukai/blob/main/LICENSE',
+      },
     ],
   };
 
@@ -40,28 +42,23 @@ const Footer = () => {
               <span className="text-xl font-bold text-foreground">LukAI</span>
             </div>
             <p className="text-muted-foreground max-w-md">
-              The intelligent expense tracker that understands natural language.
-              Track your finances effortlessly through WhatsApp.
+              Record your expenses in 3 seconds from WhatsApp
             </p>
             <div className="flex items-center space-x-4">
               <a
-                href="#"
+                href="https://github.com/lukai-app/lukai"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 bg-lukai-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Github className="w-5 h-5" />
               </a>
-              <a
+              {/* <a
                 href="#"
                 className="w-10 h-10 bg-lukai-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-lukai-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
+              </a> */}
             </div>
           </div>
 
@@ -81,7 +78,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Company</h3>
             <ul className="space-y-2">
               {links.company.map((link, index) => (
@@ -95,7 +92,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Resources</h3>
@@ -132,12 +129,10 @@ const Footer = () => {
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <p className="text-sm text-muted-foreground">
-            © 2024 LukAI. All rights reserved. Open source under AGPLv3
+            © 2025 LukAI. All rights reserved. Open source under AGPLv3
             license.
           </p>
-          <p className="text-sm text-muted-foreground">
-            Made with ❤️ for the community
-          </p>
+          <p className="text-sm text-muted-foreground">❤️ Peru is password</p>
         </div>
       </div>
     </footer>

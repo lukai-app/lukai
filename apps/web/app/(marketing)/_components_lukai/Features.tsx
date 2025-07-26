@@ -82,7 +82,7 @@ const Features = () => {
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground">
             Powerful Features for{' '}
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
+            <span className="bg-primary bg-clip-text text-transparent">
               Smart Finance
             </span>
           </h2>

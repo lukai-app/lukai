@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star } from 'lucide-react';
+import { getWhatsappBotLinkWithMessage } from '@/lib/constants/chat';
 
 const Pricing = () => {
   const plans = [
@@ -16,35 +17,36 @@ const Pricing = () => {
       price: '$0',
       period: 'forever',
       description: 'Perfect for getting started with expense tracking',
-      badge: null,
+      badge: 'Most Popular',
       features: [
-        'Up to 10 expenses',
+        'Up to 50 expenses',
         'WhatsApp integration',
         'Basic categorization',
+        'Multi-currency support',
         'Simple analytics',
         'Web dashboard access',
       ],
       cta: 'Get Started Free',
-      variant: 'outline' as const,
+      href: getWhatsappBotLinkWithMessage('hola!! soy nuevo en la app'),
+      variant: 'default' as const,
     },
     {
-      name: 'Premium',
+      name: 'Premium (Coming Soon)',
       price: '$4.99',
       period: 'per month',
       description: 'Complete expense tracking for individuals and small teams',
-      badge: 'Most Popular',
+      badge: null,
       features: [
         'Unlimited expenses',
         'Advanced AI categorization',
         'OCR document processing',
-        'Multi-currency support',
         'Advanced analytics & insights',
         'Mobile app access',
         'Budget management',
         'Financial reports',
         'Priority support',
       ],
-      cta: 'Start 14-Day Free Trial',
+      //cta: 'Start 14-Day Free Trial',
       variant: 'default' as const,
     },
   ];
@@ -55,7 +57,7 @@ const Pricing = () => {
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground">
             Simple,{' '}
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
+            <span className="bg-primary bg-clip-text text-transparent">
               Transparent Pricing
             </span>
           </h2>
@@ -114,9 +116,13 @@ const Pricing = () => {
                   ))}
                 </ul>
 
-                <Button variant={plan.variant} size="lg" className="w-full">
-                  {plan.cta}
-                </Button>
+                {plan.cta && (
+                  <a href={plan.href} target="_blank" className="block">
+                    <Button variant={plan.variant} size="lg" className="w-full">
+                      {plan.cta}
+                    </Button>
+                  </a>
+                )}
               </CardContent>
             </Card>
           ))}

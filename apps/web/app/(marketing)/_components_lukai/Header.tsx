@@ -7,9 +7,13 @@ const Header = () => {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-7 h-7 bg-lukai-primary rounded-md flex items-center justify-center">
-            <MessageCircle className="w-4 h-4 text-white" />
+            <img
+              src="/logos/logo-white.svg"
+              alt="LukAI Logo"
+              className="w-8 h-8"
+            />
           </div>
-          <span className="text-xl font-semibold text-lukai-primary">
+          <span className="text-2xl font-semibold text-lukai-primary">
             LukAI
           </span>
         </div>
@@ -34,7 +38,7 @@ const Header = () => {
             About
           </a>
           <a
-            href="https://github.com/lukai/lukai"
+            href="https://github.com/lukai-app/lukai"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-lukai-primary transition-smooth text-sm font-medium"

@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, MessageCircle, Sparkles, Play } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { getWhatsappBotLinkWithMessage } from '@/lib/constants/chat';
 
 const Hero = () => {
   return (
@@ -29,15 +30,21 @@ const Hero = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button variant="default" size="lg" className="group">
-              <MessageCircle className="w-5 h-5" />
-              Start with WhatsApp
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button variant="outline" size="lg">
+            <a
+              href={getWhatsappBotLinkWithMessage('hola!! soy nuevo en la app')}
+              target="_blank"
+              className="hidden md:block"
+            >
+              <Button variant="default" size="lg" className="group">
+                <MessageCircle className="w-5 h-5" />
+                Start with WhatsApp
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </a>
+            {/* <Button variant="outline" size="lg">
               <Play className="w-4 h-4" />
               Watch Demo
-            </Button>
+            </Button> */}
           </div>
 
           <p className="text-sm text-muted-foreground">
@@ -84,7 +91,7 @@ const Hero = () => {
                           offset: ['start 200px', 'end end'],
                         }).scrollYProgress,
                         [0, 1],
-                        [0, -100] // Adjust this value based on how much you want to scroll
+                        [0, -500] // Adjust this value based on how much you want to scroll
                       ),
                     }}
                   >

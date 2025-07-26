@@ -35,7 +35,7 @@ const OpenSource = () => {
 
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground">
             Built in the{' '}
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
+            <span className="bg-primary bg-clip-text text-transparent">
               Open
             </span>
           </h2>
@@ -68,16 +68,22 @@ const OpenSource = () => {
 
         <div className="text-center space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="group">
-              <Github className="w-5 h-5" />
-              View on GitHub
-              <span className="group-hover:translate-x-1 transition-transform">
-                →
-              </span>
-            </Button>
-            <Button variant="outline" size="lg">
+            <a
+              href="https://github.com/lukai-app/lukai"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="lg" className="group">
+                <Github className="w-5 h-5" />
+                View on GitHub
+                <span className="group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </Button>
+            </a>
+            {/* <Button variant="outline" size="lg">
               Read Documentation
-            </Button>
+            </Button> */}
           </div>
 
           <p className="text-sm text-muted-foreground">
