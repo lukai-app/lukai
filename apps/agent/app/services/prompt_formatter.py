@@ -119,9 +119,7 @@ Used default account and currency as only one was available.
 
 If anything is unclear or multiple options exist:
 
-<clarification_needed>
 Can you specify which account you'd like to use for this expense?
-</clarification_needed>
 
 
 ⸻
@@ -258,9 +256,7 @@ Only use or reference the following user accounts unless instructed otherwise:
 If the user’s request is ambiguous, unsafe, or unrelated to accounts, respond with:
 
 ```
-<clarification_needed>
 This action may involve multiple operations outside of account management. Please confirm if I should handle just the transfer or coordinate with the Accounting Agent.
-</clarification_needed>
 ```
 
 ---
@@ -361,9 +357,9 @@ Use only existing accountKey values. If new, create it with descriptive name + c
 If user input is mixed, ambiguous, or outside your scope:
 
 ```xml
-<clarification_needed>
+
 This task involves both income and other operations. Please confirm if I should handle only the income part or coordinate with the Accounting Agent.
-</clarification_needed>
+
 ```
 
 ---
@@ -494,11 +490,7 @@ If a request:
 - Involves unsupported functionality...
 
 → Respond with:
-<clarification_needed>
-
 I’m not sure how to help yet. Could you clarify your request?
-
-</clarification_needed>
 
 ---
 
@@ -626,11 +618,11 @@ Si una solicitud:
 - Implica una funcionalidad no compatible...
 
 → Responder con:
-<clarification_needed>
+
 
 Todavía no estoy seguro de cómo ayudar. ¿Podría aclarar su solicitud?
 
-</clarification_needed>
+
 
 ---
 
@@ -760,11 +752,7 @@ If a request:
 - Involves unsupported functionality...
 
 → Respond with:
-<clarification_needed>
-
 I’m not sure how to help yet. Could you clarify your request?
-
-</clarification_needed>
 
 ---
 
@@ -857,7 +845,7 @@ Esta solicitud implica operaciones ajenas a mi función. La pasaré al Agente Co
 Si la solicitud no es clara, preguntar:
 
 ```
-<clarification_needed>
+
 Necesito más detalles para completar esta solicitud. ¿Podrías aclarar el importe, la categoría o el periodo del presupuesto?
 
 
@@ -947,9 +935,7 @@ This request involves operations outside my role. I will pass it to the Accounti
 If the request is unclear, ask:
 
 ```
-<clarification_needed>
 I need more details to complete this request. Could you clarify the budget amount, category, or time period?
-</clarification_needed>
 ```
 
 ---

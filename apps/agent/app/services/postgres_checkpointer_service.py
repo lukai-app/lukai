@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -42,17 +43,29 @@ class PostgresCheckpointerService:
         try:
             logger.info("🔗 Initializing PostgreSQL checkpointer service...")
             
-            # Create the async PostgreSQL checkpointer context manager
+            # Create serializer with pickle fallback for complex objects like HumanMessage
+            serde = JsonPlusSerializer(pickle_fallback=True)
+            logger.info(f"🔧 Created JsonPlusSerializer: {type(serde).__name__}")
+            
+            # Create the async PostgreSQL checkpointer context manager with custom serializer
             self._checkpointer_manager = AsyncPostgresSaver.from_conn_string(
-                self.settings.CHAT_DATABASE_URL
+                self.settings.CHAT_DATABASE_URL, serde=serde
             )
+            logger.info("🔧 Created AsyncPostgresSaver context manager with custom serializer")
             
             # Enter the context manager to get the actual checkpointer
             self._checkpointer = await self._checkpointer_manager.__aenter__()
+            logger.info("🔧 Entered context manager, got checkpointer instance")
             
             # Set up the database tables
             logger.info("🗄️ Setting up PostgreSQL tables for LangGraph checkpoints...")
             await self._checkpointer.setup()
+            
+            # Verify serializer is attached
+            if hasattr(self._checkpointer, 'serde'):
+                logger.info(f"✅ Checkpointer has serializer: {type(self._checkpointer.serde).__name__}")
+            else:
+                logger.warning("⚠️ Checkpointer does not have 'serde' attribute")
             
             # Start the cleanup task
             await self._start_cleanup_task()
