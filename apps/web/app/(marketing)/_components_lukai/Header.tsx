@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Menu } from 'lucide-react';
+import { LoginOrGoButton } from '../_components_v2/login-or-go-button';
+import { getWhatsappBotLinkWithMessage } from '@/lib/constants/chat';
 
 const Header = () => {
   return (
@@ -48,12 +50,16 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" className="hidden md:inline-flex text-sm">
-            Sign In
-          </Button>
-          <Button variant="default" size="sm">
-            Get Started
-          </Button>
+          <a
+            href={getWhatsappBotLinkWithMessage('hola!! soy nuevo en la app')}
+            target="_blank"
+            className="hidden md:block"
+          >
+            <Button className="bg-white text-sm text-black hover:bg-white/90">
+              Start for free
+            </Button>
+          </a>
+          <LoginOrGoButton />
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="w-5 h-5" />
           </Button>

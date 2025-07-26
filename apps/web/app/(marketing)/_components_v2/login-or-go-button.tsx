@@ -53,7 +53,7 @@ export const LoginOrGoButton: React.FC = () => {
                 variant="ghost"
                 className="text-white w-[140px] text-sm gap-2 font-semibold hover:bg-white/10"
               >
-                Ir a la app
+                Go to App
                 <LuArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -65,7 +65,7 @@ export const LoginOrGoButton: React.FC = () => {
                 variant="ghost"
                 className="text-white w-[140px] text-sm gap-2 font-semibold hover:bg-white/10"
               >
-                Iniciar sesión
+                Login
                 <LuArrowRight className="w-4 h-4" />
               </Button>
             </Link>
