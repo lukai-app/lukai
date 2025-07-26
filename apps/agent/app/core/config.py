@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     WHATSAPP_PHONE_NUMBER_ID: str  # Your WhatsApp Phone Number ID
     WHATSAPP_ADMIN_NUMBER: str  # Admin's WhatsApp number for error notifications
 
+    # PostgreSQL Configuration for LangGraph
+    CHAT_DATABASE_URL: str  # PostgreSQL connection string for conversation storage
+
     # Documentation URLs (disable documentation)
     DOCS_URL: str | None = None
     REDOC_URL: str | None = None

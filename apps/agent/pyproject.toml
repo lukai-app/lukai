@@ -58,6 +58,8 @@ python-ulid = "^3.0.0"
 pytz = "^2025.2"
 sse-starlette = "^2.3.3"
 starlette = "^0.46.2"
+psycopg = {extras = ["binary", "pool"], version = "^3.2.9"}
+langgraph-checkpoint-postgres = "^2.0.23"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

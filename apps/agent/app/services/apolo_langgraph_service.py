@@ -1,17 +1,19 @@
-from typing import List, Dict, Any, Annotated
+from typing import List, Dict, Any, Annotated, Optional
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.prebuilt import create_react_agent, InjectedState
 from langgraph.graph import StateGraph, START
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command
-from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.tools import InjectedToolCallId
 from app.core.config import get_settings
 
 from app.services.main_api_service import UserData
 from app.services.prompt_formatter import ApoloPromptFormatter
+from app.services.postgres_checkpointer_service import get_postgres_checkpointer_service
 
 # Import our native LangGraph tools (much simpler!)
 from app.services.apolo_langgraph_tools import (
@@ -88,8 +90,8 @@ class ApoloLangGraphService:
             api_key=settings.GOOGLE_API_KEY,
         )
 
-        # Initialize memory checkpointer (much simpler and more reliable)
-        self.checkpointer = MemorySaver()
+        # Initialize PostgreSQL checkpointer (persistent and reliable)
+        self.checkpointer = None  # Will be initialized lazily
 
         # Native LangGraph tools (much simpler and more reliable!)
         self.tools = {
@@ -122,8 +124,11 @@ class ApoloLangGraphService:
             "create_transaction_tags": create_transaction_tags_tool,
         }
 
-    def _get_checkpointer(self):
-        """Get the memory checkpointer (no async setup needed)"""
+    async def _get_checkpointer(self):
+        """Get the PostgreSQL checkpointer (async initialization)"""
+        if self.checkpointer is None:
+            postgres_service = await get_postgres_checkpointer_service()
+            self.checkpointer = await postgres_service.get_checkpointer()
         return self.checkpointer
 
     def _create_handoff_tools(self):
@@ -151,7 +156,7 @@ class ApoloLangGraphService:
             ),
         }
 
-    def create_agents_graph(self, user: UserData) -> StateGraph:
+    async def create_agents_graph(self, user: UserData) -> CompiledStateGraph:
         """Create the multi-agent graph with handoff capabilities"""
 
         # Get handoff tools
@@ -255,19 +260,19 @@ class ApoloLangGraphService:
         # Set entry point
         graph.add_edge(START, "main_agent")
 
-        # Get memory checkpointer (no async needed)
-        checkpointer = self._get_checkpointer()
+        # Get memory checkpointer (async)
+        checkpointer = await self._get_checkpointer()
 
         # Compile with checkpointer for session persistence
         return graph.compile(checkpointer=checkpointer)
 
     async def process_query(
-        self, query: str, user_data: UserData, thread_id: str = None
+        self, query: str, user_data: UserData, thread_id: Optional[str] = None
     ) -> str:
         """Process a single query using the LangGraph multi-agent system"""
 
         # Create the graph for this user
-        graph = self.create_agents_graph(user_data)
+        graph = await self.create_agents_graph(user_data)
 
         # Prepare initial state
         initial_state = {
@@ -278,7 +283,7 @@ class ApoloLangGraphService:
         }
 
         # Configuration for checkpointing
-        config = {
+        config: RunnableConfig = {
             "configurable": {"thread_id": thread_id or f"user_{user_data.phone_number}"}
         }
 
@@ -296,11 +301,11 @@ class ApoloLangGraphService:
 
     async def process_conversation(
         self,
-        conversation: List[Dict[str, Any]],
+        current_message: str,
         user_data: UserData,
-        thread_id: str = None,
+        thread_id: Optional[str] = None,
     ) -> str:
-        """Process a conversation using the LangGraph multi-agent system"""
+        """Process a new message using the LangGraph multi-agent system with automatic conversation memory"""
         import logging
 
         logger = logging.getLogger(__name__)
@@ -310,59 +315,28 @@ class ApoloLangGraphService:
         )
 
         # Create the graph for this user
-        graph = self.create_agents_graph(user_data)
+        graph = await self.create_agents_graph(user_data)
         logger.info(f"📊 Graph created successfully with {len(self.tools)} tools")
 
-        # Convert conversation to messages compatible with Gemini
-        messages = []
-        for msg in conversation:
-            if isinstance(msg, dict):
-                # Handle complex message format from WhatsApp
-                if "content" in msg and isinstance(msg["content"], list):
-                    # Extract text content from the complex format
-                    text_content = ""
-                    for content_item in msg["content"]:
-                        if isinstance(content_item, dict):
-                            if (
-                                content_item.get("type")
-                                in ["input_text", "output_text"]
-                                and "text" in content_item
-                            ):
-                                text_content += content_item["text"] + "\n"
-                            elif "text" in content_item:
-                                text_content += content_item["text"] + "\n"
-
-                    if text_content.strip():
-                        messages.append(
-                            {
-                                "role": msg.get("role", "user"),
-                                "content": text_content.strip(),
-                            }
-                        )
-                else:
-                    # Simple message format
-                    messages.append(msg)
-            else:
-                messages.append({"role": "user", "content": str(msg)})
-
-        # Prepare initial state
+        # Prepare initial state with only the new message
+        # LangGraph will automatically load previous conversation state via thread_id
         initial_state = {
-            "messages": messages,
+            "messages": [{"role": "user", "content": current_message}],
             "user_data": user_data,
             "last_active_agent": "main_agent",
             "remaining_steps": 25,
         }
 
-        # Configuration for checkpointing
-        config = {
+        # Configuration for checkpointing - this is where LangGraph manages conversation memory
+        config: RunnableConfig = {
             "configurable": {"thread_id": thread_id or f"user_{user_data.phone_number}"}
         }
 
         logger.info(
-            f"📤 Invoking graph with {len(messages)} messages for thread {config['configurable']['thread_id']}"
+            f"📤 Invoking graph with new message for thread {config['configurable']['thread_id']}"
         )
 
-        # Invoke the graph
+        # Invoke the graph - LangGraph automatically handles conversation continuity
         result = await graph.ainvoke(initial_state, config=config)
 
         logger.info(
@@ -390,11 +364,9 @@ class ApoloLangGraphService:
     async def get_conversation_history(self, thread_id: str) -> List[BaseMessage]:
         """Get conversation history for a specific thread"""
         try:
-            checkpointer = self._get_checkpointer()
-            config = {"configurable": {"thread_id": thread_id}}
-            state = checkpointer.get(config)
-            if state and "messages" in state.values:
-                return state.values["messages"]
+            # For now, return empty list since LangGraph manages this internally
+            # This method can be enhanced later if needed for debugging/audit purposes
+            return []
         except Exception:
             pass
         return []

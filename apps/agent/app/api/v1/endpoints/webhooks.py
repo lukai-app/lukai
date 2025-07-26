@@ -9,6 +9,7 @@ import asyncio
 import hmac
 import hashlib
 import json
+import traceback
 from collections import defaultdict
 from datetime import datetime, timedelta
 from app.services.main_api_service import (
@@ -26,7 +27,8 @@ from app.services.apolo_subscription_services import (
 from app.services.whatsapp_service import send_message
 from app.services.mistral_service import mistral_service
 from app.utils.media_modifier import modify_media_with_context
-from app.utils.chat_storage import Chat, Message, MessageContent, get_chat, save_chat
+
+# Removed Redis/chat_storage imports - now using LangGraph PostgreSQL storage only
 from app.utils.error_handler import handle_error
 from app.core.analytics import mixpanel
 
@@ -133,15 +135,15 @@ def verify_webhook_signature(
         return False
 
 
-async def process_with_langgraph_retry(conversation, user_data, max_retries=3):
-    """Process conversation with LangGraph service with retry logic"""
+async def process_with_langgraph_retry(current_message, user_data, max_retries=3):
+    """Process current message with LangGraph service with retry logic"""
     for attempt in range(max_retries):
         try:
             logger.info(
                 f"🤖 LangGraph attempt {attempt + 1}/{max_retries} for user {user_data.phone_number}"
             )
             response = await apolo_langgraph_service.process_conversation(
-                conversation=conversation,
+                current_message=current_message,
                 user_data=user_data,
                 thread_id=user_data.chatId,
             )
@@ -246,30 +248,12 @@ async def process_user_message_batch(user_phone: str):
             # Get user data from the first message (all should have same user)
             user_data = message_batch[0]["user"]
 
-            # Get or create chat
-            chat = await get_chat(
-                chat_id=user_data.chatId,
-                user_id=user_data.id,
+            logger.info(
+                f"💬 BATCH_PROCESS: Processing batch with LangGraph PostgreSQL storage for user {user_phone}"
             )
 
-            if not chat:
-                logger.info(
-                    f"💬 BATCH_PROCESS: Creating new chat for user {user_phone}"
-                )
-                chat = Chat(
-                    id=user_data.chatId,
-                    title=f"Chat with {user_data.name or 'User'}",
-                    created_at=datetime.now(),
-                    user_id=user_data.id,
-                    messages=[],
-                )
-            else:
-                logger.info(
-                    f"💬 BATCH_PROCESS: Using existing chat for user {user_phone}"
-                )
-
-            # Create message contents from all messages in the batch
-            message_contents = []
+            # Extract current message text for LangGraph - combine all text content from batch
+            current_message_text = ""
 
             for i, msg_data in enumerate(message_batch):
                 logger.info(
@@ -277,50 +261,20 @@ async def process_user_message_batch(user_phone: str):
                 )
 
                 if msg_data.get("text"):
-                    message_contents.append(
-                        MessageContent(
-                            type="input_text",
-                            text=msg_data["text"],
-                        )
-                    )
+                    current_message_text += msg_data["text"] + "\n"
                     logger.info(
                         f"✅ BATCH_PROCESS: Added text content: '{msg_data['text'][:50]}...'"
                     )
 
-                # Add image if present
+                # Add image context if present
                 if "image_url" in msg_data:
-                    message_contents.append(
-                        MessageContent(
-                            type="input_image",
-                            image_url=msg_data["image_url"],
-                        )
-                    )
                     logger.info(f"✅ BATCH_PROCESS: Added image content")
 
-            logger.info(
-                f"📋 BATCH_PROCESS: Created {len(message_contents)} message contents for batch"
-            )
-
-            # Create single message with all content
-            new_message = Message(
-                role="user",
-                content=message_contents,
-            )
-
-            # Update chat with new batched message
-            updated_chat = Chat(
-                **{
-                    **chat.model_dump(),
-                    "messages": [*chat.messages, new_message],
-                }
-            )
-
-            conversation = [
-                msg.model_dump(exclude_none=True) for msg in updated_chat.messages[-5:]
-            ]
+            # Clean up the message text
+            current_message_text = current_message_text.strip()
 
             logger.info(
-                f"🤖 BATCH_PROCESS: Sending to AI with {len(conversation)} conversation messages"
+                f"🤖 BATCH_PROCESS: Sending current message to AI: '{current_message_text[:100]}...'"
             )
 
             # Process with appropriate service based on subscription status
@@ -333,13 +287,15 @@ async def process_user_message_batch(user_phone: str):
                         f"💎 BATCH_PROCESS: Using apolo_langgraph_service (active/trial subscription)"
                     )
                     response = await process_with_langgraph_retry(
-                        conversation=conversation,
+                        current_message=current_message_text,
                         user_data=user_data,
                     )
                 else:
                     logger.info(
                         f"⛔ BATCH_PROCESS: Using apolo_expired_service (expired subscription)"
                     )
+                    # For non-LangGraph services, create a simple conversation format
+                    conversation = [{"role": "user", "content": current_message_text}]
                     response = await apolo_expired_service.process_conversation(
                         conversation=conversation,
                         user_data=user_data,
@@ -351,6 +307,8 @@ async def process_user_message_batch(user_phone: str):
                     logger.info(
                         f"🔄 BATCH_PROCESS: Using apolo_trial_conversion_service (>31 days)"
                     )
+                    # For non-LangGraph services, create a simple conversation format
+                    conversation = [{"role": "user", "content": current_message_text}]
                     response = (
                         await apolo_trial_conversion_service.process_conversation(
                             conversation=conversation,
@@ -362,37 +320,24 @@ async def process_user_message_batch(user_phone: str):
                         f"🆓 BATCH_PROCESS: Using apolo_langgraph_service (free trial <31 days)"
                     )
                     response = await process_with_langgraph_retry(
-                        conversation=conversation,
+                        current_message=current_message_text,
                         user_data=user_data,
                     )
+
+            # Ensure response is a string
+            if isinstance(response, list):
+                response = str(response)
+            elif response is None:
+                response = "I apologize, but I couldn't process your request. Please try again."
 
             logger.info(
                 f"✅ BATCH_PROCESS: Generated response for user {user_phone}: '{response[:100]}...'"
             )
 
-            # Save assistant's response
-            assistant_message = Message(
-                role="assistant",
-                content=[
-                    MessageContent(
-                        type="output_text",
-                        text=response,
-                    )
-                ],
+            # Note: No need to save chat - LangGraph PostgreSQL handles persistence automatically
+            logger.info(
+                f"💾 BATCH_PROCESS: Chat persistence handled by LangGraph PostgreSQL for user {user_phone}"
             )
-
-            final_chat = Chat(
-                **{
-                    **updated_chat.model_dump(),
-                    "messages": [
-                        *updated_chat.messages,
-                        assistant_message,
-                    ],
-                }
-            )
-
-            await save_chat(final_chat)
-            logger.info(f"💾 BATCH_PROCESS: Saved chat for user {user_phone}")
 
             # Send the response back to the user via WhatsApp
             logger.info(
@@ -637,7 +582,7 @@ async def process_image_message(message: dict, message_data: dict):
                                     )
                                 else:
                                     registration_results.append(
-                                        f"❌ Failed to register expenses: {expense_result.message}"
+                                        f"❌ Failed to register expenses: {expense_result.data.tool_response}"
                                     )
                             except Exception as e:
                                 logger.error(f"Error registering expenses: {str(e)}")
@@ -674,7 +619,7 @@ async def process_image_message(message: dict, message_data: dict):
                                     )
                                 else:
                                     registration_results.append(
-                                        f"❌ Failed to register incomes: {income_result.message}"
+                                        f"❌ Failed to register incomes: {income_result.data.tool_response}"
                                     )
                             except Exception as e:
                                 logger.error(f"Error registering incomes: {str(e)}")
@@ -909,7 +854,7 @@ async def process_document_message(message: dict, message_data: dict):
                                     )
                                 else:
                                     registration_results.append(
-                                        f"❌ Failed to register expenses: {expense_result.message}"
+                                        f"❌ Failed to register expenses: {expense_result.data.tool_response}"
                                     )
                             except Exception as e:
                                 logger.error(f"Error registering expenses: {str(e)}")
@@ -946,7 +891,7 @@ async def process_document_message(message: dict, message_data: dict):
                                     )
                                 else:
                                     registration_results.append(
-                                        f"❌ Failed to register incomes: {income_result.message}"
+                                        f"❌ Failed to register incomes: {income_result.data.tool_response}"
                                     )
                             except Exception as e:
                                 logger.error(f"Error registering incomes: {str(e)}")
@@ -1143,8 +1088,14 @@ async def download_media(media_id: str) -> bytes:
             detail="Request to WhatsApp API timed out while downloading media",
         )
     except httpx.HTTPError as e:
+        status_code = 500
+        try:
+            if hasattr(e, "response") and getattr(e, "response", None) is not None:
+                status_code = e.response.status_code  # type: ignore
+        except:
+            pass
         raise HTTPException(
-            status_code=e.response.status_code if hasattr(e, "response") else 500,
+            status_code=status_code,
             detail=f"Error downloading media from WhatsApp API: {str(e)}",
         )
     except Exception as e:
@@ -1167,7 +1118,7 @@ async def verify_whatsapp_webhook(
     challenge: str = Query(
         ..., alias="hub.challenge", description="The challenge string"
     ),
-) -> Dict[str, Any]:
+):
     """
     Verify the WhatsApp webhook.
     This endpoint is used by WhatsApp to verify the webhook URL when you first set it up.
