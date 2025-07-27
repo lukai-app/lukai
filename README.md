@@ -222,8 +222,6 @@ Looking for enterprise features, support, or custom integrations?
 <div align="center">
   <p>Built with ❤️ by the LukAI team</p>
   <p>
-    <a href="https://lukai.app">Website</a> •
-    <a href="https://linkedin.com/company/lukai">LinkedIn</a> •
-    <a href="https://x.com/lukai">X</a>
+    <a href="https://lukai.app">Website</a>
   </p>
 </div>
