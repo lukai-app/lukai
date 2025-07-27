@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     # PostgreSQL Configuration for LangGraph
     CHAT_DATABASE_URL: str  # PostgreSQL connection string for conversation storage
 
+    # LangSmith Configuration
+    LANGSMITH_TRACING: bool = False
+    LANGSMITH_API_KEY: str = ""
+
     # Documentation URLs (disable documentation)
     DOCS_URL: str | None = None
     REDOC_URL: str | None = None

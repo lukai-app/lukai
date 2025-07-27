@@ -19,6 +19,7 @@ from app.services.main_api_service import (
 )
 from app.utils.transcribe import transcribe_audio
 from app.services.apolo_langgraph_service import apolo_langgraph_service
+from app.services.lukai_free_langgraph_service import lukai_free_langgraph_service
 from app.services.apolo_free_trial_service import apolo_free_trial_service
 from app.services.apolo_subscription_services import (
     apolo_expired_service,
@@ -167,6 +168,38 @@ async def process_with_langgraph_retry(current_message, user_data, max_retries=3
             await asyncio.sleep(1)  # Brief delay before retry
 
 
+async def process_with_free_langgraph_retry(current_message, user_data, max_retries=3):
+    """Process current message with Free LangGraph service with retry logic"""
+    for attempt in range(max_retries):
+        try:
+            logger.info(
+                f"🤖 Free LangGraph attempt {attempt + 1}/{max_retries} for user {user_data.phone_number}"
+            )
+            response = await lukai_free_langgraph_service.process_conversation(
+                current_message=current_message,
+                user_data=user_data,
+                thread_id=user_data.chatId,
+            )
+            logger.info(
+                f"✅ Free LangGraph success on attempt {attempt + 1} for user {user_data.phone_number}"
+            )
+            return response
+        except Exception as e:
+            import traceback
+
+            error_details = traceback.format_exc()
+            logger.error(
+                f"❌ Free LangGraph attempt {attempt + 1} failed for user {user_data.phone_number}: {str(e)}"
+            )
+            logger.error(f"📋 Full error traceback:\n{error_details}")
+            if attempt == max_retries - 1:
+                logger.error(
+                    f"🚨 All Free LangGraph retries failed for user {user_data.phone_number}"
+                )
+                raise e
+            await asyncio.sleep(1)  # Brief delay before retry
+
+
 async def mark_message_read_and_show_typing(user_phone: str, message_id: str):
     """Mark message as read and show typing indicator"""
     try:
@@ -292,37 +325,20 @@ async def process_user_message_batch(user_phone: str):
                     )
                 else:
                     logger.info(
-                        f"⛔ BATCH_PROCESS: Using apolo_expired_service (expired subscription)"
+                        f"⛔ BATCH_PROCESS: Using lukai_free_langgraph_service (expired subscription)"
                     )
-                    # For non-LangGraph services, create a simple conversation format
-                    conversation = [{"role": "user", "content": current_message_text}]
-                    response = await apolo_expired_service.process_conversation(
-                        conversation=conversation,
-                        user_data=user_data,
-                    )
-            else:
-                current_date = datetime.now(user_data.created_at.tzinfo)
-                days_since_creation = (current_date - user_data.created_at).days
-                if days_since_creation > 31:
-                    logger.info(
-                        f"🔄 BATCH_PROCESS: Using apolo_trial_conversion_service (>31 days)"
-                    )
-                    # For non-LangGraph services, create a simple conversation format
-                    conversation = [{"role": "user", "content": current_message_text}]
-                    response = (
-                        await apolo_trial_conversion_service.process_conversation(
-                            conversation=conversation,
-                            user_data=user_data,
-                        )
-                    )
-                else:
-                    logger.info(
-                        f"🆓 BATCH_PROCESS: Using apolo_langgraph_service (free trial <31 days)"
-                    )
-                    response = await process_with_langgraph_retry(
+                    response = await process_with_free_langgraph_retry(
                         current_message=current_message_text,
                         user_data=user_data,
                     )
+            else:
+                logger.info(
+                    f"🆓 BATCH_PROCESS: Using lukai_free_langgraph_service (free plan)"
+                )
+                response = await process_with_free_langgraph_retry(
+                    current_message=current_message_text,
+                    user_data=user_data,
+                )
 
             # Ensure response is a string
             if isinstance(response, list):
