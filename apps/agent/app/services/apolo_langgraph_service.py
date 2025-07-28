@@ -85,7 +85,7 @@ class ApoloLangGraphService:
 
         self.prompt_formatter = ApoloPromptFormatter()
         self.model = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash-lite-preview-06-17",
+            model="gemini-2.5-flash",
             temperature=0,
             api_key=settings.GOOGLE_API_KEY,
         )
