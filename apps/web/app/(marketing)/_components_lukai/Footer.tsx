@@ -1,4 +1,11 @@
-import { MessageCircle, Github, Twitter, Mail } from 'lucide-react';
+import { getWhatsappBotLinkWithMessage } from '@/lib/constants/chat';
+import {
+  MessageCircle,
+  Github,
+  Twitter,
+  Instagram,
+  Linkedin,
+} from 'lucide-react';
 
 const Footer = () => {
   const links = {
@@ -17,8 +24,12 @@ const Footer = () => {
     resources: [
       { name: 'GitHub', href: 'https://github.com/lukai-app/lukai' },
       /* { name: 'Community', href: '#' },
-      { name: 'Support', href: '#' }, */
-      //{ name: 'Status', href: '#' },
+       */
+      {
+        name: 'Support',
+        href: getWhatsappBotLinkWithMessage('Hello, I need help with LukAI!'),
+      },
+      { name: 'Status', href: 'https://status.lukai.app/' },
     ],
     legal: [
       { name: 'Privacy Policy', href: '/privacy.html' },
@@ -53,12 +64,30 @@ const Footer = () => {
               >
                 <Github className="w-5 h-5" />
               </a>
-              {/* <a
-                href="#"
+              <a
+                href="https://x.com/lukai_app"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 bg-lukai-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Twitter className="w-5 h-5" />
-              </a> */}
+              </a>
+              <a
+                href="https://www.instagram.com/lukai.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-lukai-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/lukai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-lukai-muted rounded-lg flex items-center  justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
+              >
+                <Linkedin className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
