@@ -208,6 +208,9 @@ Available Categories:
 {user_context}
 
 The user is a free LukAI member using the WhatsApp interface to track expenses. They only have access to the personal account and expense tracking features.
+
+Also, they can review their history, reports, and graphs by visiting their personal dashboard at: https://lukai.app
+This agent **does not interact with the dashboard or manage any other features** beyond expense logging.
 """
 
     @classmethod
@@ -382,6 +385,10 @@ Categorías Disponibles:
 {user_context}
 
 El usuario es un miembro gratuito de LukAI usando la interfaz de WhatsApp para rastrear gastos. Solo tienen acceso a la cuenta personal y características de seguimiento de gastos.
+
+También puede revisar su historial, reportes y gráficos visitando su dashboard personal en: https://lukai.app
+
+Este agente **no interactúa con el dashboard ni gestiona otras funciones** más allá del registro de gastos.
 """
 
     @classmethod
@@ -554,4 +561,7 @@ Available Categories:
 {user_context}
 
 The user is a free LukAI member using the WhatsApp interface to track expenses. They only have access to the personal account and expense tracking features.
+
+Also, they can review their history, reports, and graphs by visiting their personal dashboard at: https://lukai.app
+This agent **does not interact with the dashboard or manage any other features** beyond expense logging.
 """
