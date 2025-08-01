@@ -5,9 +5,9 @@
   "description": "LukAI Python Agent Service",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev": "source .venv/bin/activate && poetry run uvicorn app.main:app --reload --port 8000",
-    "start": "source .venv/bin/activate && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000",
-    "build": "source .venv/bin/activate && poetry build",
+    "dev": "source .lukai-agent/bin/activate && poetry run uvicorn app.main:app --reload --port 8000",
+    "start": "source .lukai-agent/bin/activate && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000",
+    "build": "source .lukai-agent/bin/activate && poetry build",
     "install": "poetry install",
     "test": "poetry run pytest",
     "lint": "poetry run flake8 app tests",
