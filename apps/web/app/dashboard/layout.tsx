@@ -104,7 +104,9 @@ export default function DashboardLayout({
               }
             >
               <AppSidebar variant="inset" className="h-screen" />
-              <SidebarInset>{children}</SidebarInset>
+              <SidebarInset className="flex flex-1 flex-col p-10">
+                {children}
+              </SidebarInset>
             </SidebarProvider>
           </AppProvider>
         )}

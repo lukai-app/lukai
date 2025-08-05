@@ -75,18 +75,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   return (
     <Sidebar collapsible="none" {...props}>
-      <SidebarHeader>
-        <Link href="/dashboard" className="flex flex-row gap-0 cursor-pointer">
-          <img
-            src={'/logos/white-transparent.png'}
-            className="object-contain mt-1"
-            style={{ height: 48 }}
-          />
-          <img
-            src={'/logo-white.png'}
-            className="object-contain"
-            style={{ width: 106 }}
-          />
+      <SidebarHeader className="p-6 pb-2">
+        <Link
+          href="/dashboard"
+          className="flex flex-row gap-2 items-center cursor-pointer"
+        >
+          <div className="w-7 h-7 bg-lukai-primary rounded-md flex items-center justify-center">
+            <img
+              src="/logos/logo-white.svg"
+              alt="LukAI Logo"
+              className="w-8 h-8"
+            />
+          </div>
+          <span className="text-3xl font-bold text-lukai-primary">LukAI</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
