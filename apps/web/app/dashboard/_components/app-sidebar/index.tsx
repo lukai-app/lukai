@@ -69,7 +69,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="none" {...props}>
-      <SidebarHeader className="p-6 pb-4">
+      <SidebarHeader className="p-6">
         <Link
           href="/dashboard"
           className="flex flex-row gap-2 items-center cursor-pointer"
@@ -101,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         });
                       }}
                       className={cn(
-                        '!px-4 !py-3 !rounded-xl text-[#AFAFAF] gap-3 !h-12 font-medium',
+                        '!px-4 !py-3 !rounded-xl text-[#AFAFAF] gap-3 !h-12 font-medium transition-all duration-200 active:scale-95',
                         pathname === item.url
                           ? 'bg-sidebar-accent text-primary !font-semibold hover:!text-primary'
                           : 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
