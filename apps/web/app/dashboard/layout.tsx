@@ -95,7 +95,7 @@ export default function DashboardLayout({
         ) : (
           <AppProvider>
             <SidebarProvider
-              className="font-nunito bg-[#010802]"
+              className="font-nunito bg-[#010802] min-h-svh"
               style={
                 {
                   '--sidebar-width': 'calc(var(--spacing) * 82)',
@@ -103,7 +103,7 @@ export default function DashboardLayout({
                 } as React.CSSProperties
               }
             >
-              <AppSidebar variant="inset" className="h-screen" />
+              <AppSidebar variant="inset" className="min-h-svh sticky top-0" />
               <SidebarInset className="flex flex-1 flex-col p-10">
                 {children}
               </SidebarInset>
