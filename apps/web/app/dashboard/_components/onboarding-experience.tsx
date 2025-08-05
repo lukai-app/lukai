@@ -64,7 +64,7 @@ export function OnboardingExperience() {
   };
 
   return (
-    <div className="flex-1 bg-black text-white flex flex-col items-center justify-center px-4">
+    <div className="flex-1 text-white flex flex-col items-center justify-center px-4">
       <AnimatePresence mode="wait">
         {!showQrCode ? (
           <motion.div

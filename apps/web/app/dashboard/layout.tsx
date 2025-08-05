@@ -2,7 +2,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
 
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from './_components/app-sidebar';
 import { useSession } from '@/app/_components/session-provider';
 import { AppProvider } from '@/app/dashboard/_context/app-context';
@@ -94,15 +94,17 @@ export default function DashboardLayout({
           </AppProvider>
         ) : (
           <AppProvider>
-            <SidebarProvider className="font-nunito">
-              <div className="w-full max-w-[1400px] mx-auto min-h-screen bg-[#05060A]">
-                <div className="flex">
-                  <AppSidebar />
-                  <main className="max-w-[976px] mx-auto px-11 w-full md:mb-16">
-                    {children}
-                  </main>
-                </div>
-              </div>
+            <SidebarProvider
+              className="font-nunito bg-[#010802]"
+              style={
+                {
+                  '--sidebar-width': 'calc(var(--spacing) * 82)',
+                  '--header-height': 'calc(var(--spacing) * 12)',
+                } as React.CSSProperties
+              }
+            >
+              <AppSidebar variant="inset" className="h-screen" />
+              <SidebarInset>{children}</SidebarInset>
             </SidebarProvider>
           </AppProvider>
         )}
