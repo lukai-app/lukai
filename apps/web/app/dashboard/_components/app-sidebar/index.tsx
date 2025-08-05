@@ -1,14 +1,10 @@
 'use client';
-import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
-  LogOutIcon,
   ListIcon,
   ScrollText,
   HomeIcon,
   LibraryIcon,
-  CoinsIcon,
-  XIcon,
   LinkIcon,
 } from 'lucide-react';
 
@@ -21,20 +17,17 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
 
 import { useSession } from '@/app/_components/session-provider';
-import { CurrencySelector } from './currency-selector';
-import { YearSelector } from './year-selector';
-import { SubscriptionStatus } from './subscription-status';
 import { mixpanel } from '@/lib/tools/mixpanel';
 import { ChevronRightIcon } from 'lucide-react';
 import Link from 'next/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MobileCurrencySelector } from '@/app/dashboard/_components/mobile-currency-selector';
+import { cn } from '@/lib/utils';
 
 const items = [
   {
@@ -62,7 +55,7 @@ const items = [
     mixpanelEvent: 'books_visited',
   },
   {
-    title: 'Connections (beta)',
+    title: 'Conexiones (beta)',
     url: '/dashboard/connections',
     icon: LinkIcon,
     mixpanelEvent: 'connections_visited',
@@ -70,12 +63,13 @@ const items = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { theme } = useTheme();
-  const { session, signOut } = useSession();
+  const { session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <Sidebar collapsible="none" {...props}>
-      <SidebarHeader className="p-6 pb-2">
+      <SidebarHeader className="p-6 pb-4">
         <Link
           href="/dashboard"
           className="flex flex-row gap-2 items-center cursor-pointer"
@@ -91,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="px-4">
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -106,10 +100,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           fecha_hora: new Date(),
                         });
                       }}
-                      className="!px-4 !py-3 !rounded-full gap-5 !h-12"
+                      className={cn(
+                        '!px-4 !py-3 !rounded-xl text-[#AFAFAF] gap-3 !h-12 font-medium',
+                        pathname === item.url
+                          ? 'bg-sidebar-accent text-primary !font-semibold hover:!text-primary'
+                          : 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                      )}
                     >
-                      <item.icon className="h-6 w-6" />
-                      <span className="text-sm">{item.title}</span>
+                      <item.icon className="!h-5 !w-5" />
+                      <span className="text-base">{item.title}</span>
                     </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
