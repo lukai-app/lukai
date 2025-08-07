@@ -27,6 +27,7 @@ import { parseAsBoolean, parseAsIsoDateTime, useQueryState } from 'nuqs';
 import { TransactionModal } from '@/app/dashboard/_components/mobile-recent-transactions/transactions-modal';
 import DayjsSingleton from '@/lib/helpers/Dayjs';
 import { TagsBreakdown } from '@/app/dashboard/_components/tags-breakdown';
+import { CashFlowSummary } from '@/app/dashboard/_components/cash-flow-summary';
 
 export default function HomePage() {
   const { session, signOut, isLoading: isSessionLoading } = useSession();
@@ -191,6 +192,24 @@ export default function HomePage() {
             />
           </div>
 
+          {/* Cash Flow Summary */}
+          {data && (
+            <div className="px-4 mb-6">
+              <CashFlowSummary
+                netAmount={
+                  (data.monthData.income.amount ?? 0) -
+                  (data.monthData.expense.amount ?? 0)
+                }
+                income={data.monthData.income.amount ?? 0}
+                spend={data.monthData.expense.amount ?? 0}
+                previousPeriodAmount={355.34} // You can replace this with actual previous period data
+                previousPeriodLabel="in Jul 1 - Jul 6, 2025"
+                currency={data.currency}
+                locale={session?.user.favorite_locale || 'en-US'}
+              />
+            </div>
+          )}
+
           <>
             {isLoading ? (
               <Text className="p-4">Loading...</Text>
@@ -348,39 +367,29 @@ export default function HomePage() {
             <Text className="p-4">Error: {error.message}</Text>
           ) : data ? (
             <>
-              <div className="flex flex-col mb-9">
-                <p className="text-muted-foreground mb-1">total</p>
-                <FormattedMainTotal className="mb-4" />
+              <div className="flex items-center border-b px-10 py-4 justify-between gap-4 mb-10">
+                <p className="text-xl font-semibold">Dashboard</p>
+                <MobileMonthSelector
+                  locale={session?.user.favorite_locale || 'en-US'}
+                  selectedTab={selectedTab}
+                  className="h-[50px] px-6 text-base rounded-full"
+                />
+              </div>
 
-                <div className="flex gap-4">
-                  <Tabs
-                    value={selectedTab}
-                    onValueChange={(value) =>
-                      setSelectedTab(value as 'expense' | 'income')
-                    }
-                  >
-                    <TabsList>
-                      <TabsTrigger
-                        value="expense"
-                        className="data-[state=active]:bg-yc-600"
-                      >
-                        - {formatCurrency(data?.monthData.expense.amount ?? 0)}
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="income"
-                        className="data-[state=active]:bg-lemon-950"
-                      >
-                        + {formatCurrency(data?.monthData.income.amount ?? 0)}
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-
-                  <MobileMonthSelector
-                    locale={session?.user.favorite_locale || 'en-US'}
-                    selectedTab={selectedTab}
-                    className="h-[50px] px-6 text-base rounded-full"
-                  />
-                </div>
+              {/* Cash Flow Summary */}
+              <div className="mb-9">
+                <CashFlowSummary
+                  netAmount={
+                    (data.monthData.income.amount ?? 0) -
+                    (data.monthData.expense.amount ?? 0)
+                  }
+                  income={data.monthData.income.amount ?? 0}
+                  spend={data.monthData.expense.amount ?? 0}
+                  previousPeriodAmount={355.34} // You can replace this with actual previous period data
+                  previousPeriodLabel="in Jul 1 - Jul 6, 2025"
+                  currency={data.currency}
+                  locale={session?.user.favorite_locale || 'en-US'}
+                />
               </div>
 
               <div className="space-y-6">

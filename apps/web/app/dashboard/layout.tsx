@@ -99,7 +99,7 @@ export default function DashboardLayout({
                 variant="inset"
                 className="min-h-svh sticky top-0 w-[260px]"
               />
-              <SidebarInset className="flex flex-1 flex-col p-10">
+              <SidebarInset className="flex flex-1 flex-col">
                 {children}
               </SidebarInset>
             </SidebarProvider>
