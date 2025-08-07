@@ -369,7 +369,7 @@ export default function HomePage() {
           ) : data ? (
             <>
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-[#2A2A2A] p-4 pb-[18px] mb-8">
+              <div className="flex items-center justify-between border-b border-[#2A2A2A] p-4 pb-[18px]">
                 <div className="flex items-center gap-8">
                   <h1 className="text-xl font-semibold text-white">
                     Dashboard
@@ -385,7 +385,7 @@ export default function HomePage() {
               </div>
 
               {/* Main Content */}
-              <div className="px-10">
+              <div className="p-4">
                 {/* Summary Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                   {/* Total Net */}
