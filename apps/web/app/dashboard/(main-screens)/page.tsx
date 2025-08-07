@@ -28,6 +28,7 @@ import { TransactionModal } from '@/app/dashboard/_components/mobile-recent-tran
 import DayjsSingleton from '@/lib/helpers/Dayjs';
 import { TagsBreakdown } from '@/app/dashboard/_components/tags-breakdown';
 import { CashFlowSummary } from '@/app/dashboard/_components/cash-flow-summary';
+import { TrendingUp } from 'lucide-react';
 
 export default function HomePage() {
   const { session, signOut, isLoading: isSessionLoading } = useSession();
@@ -367,173 +368,246 @@ export default function HomePage() {
             <Text className="p-4">Error: {error.message}</Text>
           ) : data ? (
             <>
-              <div className="flex items-center border-b px-10 py-4 justify-between gap-4 mb-10">
-                <p className="text-xl font-semibold">Dashboard</p>
-                <MobileMonthSelector
-                  locale={session?.user.favorite_locale || 'en-US'}
-                  selectedTab={selectedTab}
-                  className="h-[50px] px-6 text-base rounded-full"
-                />
-              </div>
-
-              {/* Cash Flow Summary */}
-              <div className="mb-9">
-                <CashFlowSummary
-                  netAmount={
-                    (data.monthData.income.amount ?? 0) -
-                    (data.monthData.expense.amount ?? 0)
-                  }
-                  income={data.monthData.income.amount ?? 0}
-                  spend={data.monthData.expense.amount ?? 0}
-                  previousPeriodAmount={355.34} // You can replace this with actual previous period data
-                  previousPeriodLabel="in Jul 1 - Jul 6, 2025"
-                  currency={data.currency}
-                  locale={session?.user.favorite_locale || 'en-US'}
-                />
-              </div>
-
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold">
-                  {selectedTab === 'expense' ? 'gastos' : 'ingresos'} por día
-                </h3>
-                <div className="bg-zinc-900 rounded-lg p-4">
-                  <MobileDailyCashFlow
-                    data={
-                      selectedTab === 'expense'
-                        ? data.monthData.dailyCashFlow.map((item) => ({
-                            day: item.day,
-                            amount: item.expenses,
-                            type: 'expense',
-                          }))
-                        : data.monthData.dailyCashFlow.map((item) => ({
-                            day: item.day,
-                            amount: item.income,
-                            type: 'income',
-                          }))
-                    }
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-[#2A2A2A] p-4 pb-[18px] mb-8">
+                <div className="flex items-center gap-8">
+                  <h1 className="text-xl font-semibold text-white">
+                    Dashboard
+                  </h1>
+                </div>
+                <div className="flex items-center gap-4">
+                  <MobileMonthSelector
                     locale={session?.user.favorite_locale || 'en-US'}
                     selectedTab={selectedTab}
-                    onSelectedDate={(date) => {
-                      // date is like 2025-04-08T05:00:00.000Z
-                      const dateStart = dayjs(date).startOf('day').toDate();
-                      const dateEnd = dayjs(date).endOf('day').toDate();
-                      setDateFrom(dateStart);
-                      setDateTo(dateEnd);
-                      setOpenTransactionsModal(true);
-                    }}
-                    className="px-0"
+                    className="h-[40px] px-4 text-sm rounded-lg border border-slate-700 bg-slate-800"
                   />
                 </div>
               </div>
 
-              <div className="h-16"></div>
-
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold">
-                  {selectedTab === 'expense' ? 'gastos' : 'ingresos'} por
-                  categoría
-                </h3>
-                <div className="bg-zinc-900 rounded-lg p-4">
-                  <MobileCategoryBreakdown
-                    data={
-                      selectedTab === 'expense'
-                        ? data.monthData.expensesByCategory
-                        : data.monthData.incomeByCategory
-                    }
-                    selectedTab={selectedTab}
-                    onSelectCategory={(id) => {
-                      setSelectedCategory(id);
-                      setOpenTransactionsModal(true);
-                    }}
-                  />
-                </div>
-              </div>
-
-              {selectedTab === 'expense' ? (
-                <>
-                  <div className="h-16"></div>
-
-                  <div className="space-y-6">
-                    <div className="text-xl font-semibold">tags</div>
-                    <div className="bg-zinc-900 rounded-lg p-4">
-                      <TagsBreakdown
-                        data={data.monthData.expenses}
-                        selectedTab={selectedTab}
-                        onSelectTag={(id) => {
-                          setSelectedTag(id);
-                          setOpenTransactionsModal(true);
-                        }}
-                      />
+              {/* Main Content */}
+              <div className="px-10">
+                {/* Summary Stats */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                  {/* Total Net */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-slate-400">
+                        Net this month
+                      </h3>
+                      <div className="flex items-center gap-1 text-slate-500 text-xs">
+                        <span>CASH FLOW</span>
+                        <TrendingUp className="w-3 h-3" />
+                      </div>
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-1">
+                      {formatCurrency(
+                        (data.monthData.income.amount ?? 0) -
+                          (data.monthData.expense.amount ?? 0)
+                      )}
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      vs previous period
                     </div>
                   </div>
-                </>
-              ) : null}
 
-              {data.monthData.currentMonthBudget.budgeted &&
-                data.monthData.currentMonthBudget.used && (
-                  <>
-                    <div className="h-16"></div>
+                  {/* Total Income */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-slate-400">
+                        Total Income
+                      </h3>
+                    </div>
+                    <div className="text-3xl font-bold text-green-400 mb-1">
+                      {formatCurrency(data.monthData.income.amount ?? 0)}
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      +
+                      {(
+                        ((data.monthData.income.amount ?? 0) /
+                          Math.max(data.monthData.expense.amount ?? 1, 1)) *
+                        100
+                      ).toFixed(1)}
+                      % vs expenses
+                    </div>
+                  </div>
 
-                    <BudgetProgress
-                      budgetTotal={data.monthData.currentMonthBudget.budgeted}
-                      budgetUsed={data.monthData.currentMonthBudget.used}
-                      currency={data.currency}
+                  {/* Total Expenses */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-slate-400">
+                        Total Expenses
+                      </h3>
+                    </div>
+                    <div className="text-3xl font-bold text-red-400 mb-1">
+                      {formatCurrency(data.monthData.expense.amount ?? 0)}
+                    </div>
+                    <div className="text-sm text-slate-400">
+                      {data.monthData.expensesByCategory?.length || 0}{' '}
+                      categories
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cash Flow Summary */}
+                <div className="mb-8">
+                  <CashFlowSummary
+                    netAmount={
+                      (data.monthData.income.amount ?? 0) -
+                      (data.monthData.expense.amount ?? 0)
+                    }
+                    income={data.monthData.income.amount ?? 0}
+                    spend={data.monthData.expense.amount ?? 0}
+                    previousPeriodAmount={355.34}
+                    previousPeriodLabel="in Jul 1 - Jul 6, 2025"
+                    currency={data.currency}
+                    locale={session?.user.favorite_locale || 'en-US'}
+                  />
+                </div>
+
+                {/* Charts and Analytics */}
+                <div className="space-y-8">
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      {selectedTab === 'expense' ? 'Expenses' : 'Income'} by Day
+                    </h3>
+                    <MobileDailyCashFlow
+                      data={
+                        selectedTab === 'expense'
+                          ? data.monthData.dailyCashFlow.map((item) => ({
+                              day: item.day,
+                              amount: item.expenses,
+                              type: 'expense',
+                            }))
+                          : data.monthData.dailyCashFlow.map((item) => ({
+                              day: item.day,
+                              amount: item.income,
+                              type: 'income',
+                            }))
+                      }
                       locale={session?.user.favorite_locale || 'en-US'}
+                      selectedTab={selectedTab}
+                      onSelectedDate={(date) => {
+                        // date is like 2025-04-08T05:00:00.000Z
+                        const dateStart = dayjs(date).startOf('day').toDate();
+                        const dateEnd = dayjs(date).endOf('day').toDate();
+                        setDateFrom(dateStart);
+                        setDateTo(dateEnd);
+                        setOpenTransactionsModal(true);
+                      }}
+                      className="px-0"
                     />
+                  </div>
+                </div>
 
-                    <BudgetPerCategory
-                      data={data.monthData.expensesByCategory.map(
-                        (expenseByCategory) => {
-                          const image_url =
-                            session?.user.expense_categories.find(
-                              (category) =>
-                                category.value === expenseByCategory.id
-                            )?.image_url;
+                <div className="h-16"></div>
 
-                          return {
-                            ...expenseByCategory,
-                            image_url: image_url ?? null,
-                          };
-                        }
-                      )}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold">
+                    {selectedTab === 'expense' ? 'gastos' : 'ingresos'} por
+                    categoría
+                  </h3>
+                  <div className="bg-zinc-900 rounded-lg p-4">
+                    <MobileCategoryBreakdown
+                      data={
+                        selectedTab === 'expense'
+                          ? data.monthData.expensesByCategory
+                          : data.monthData.incomeByCategory
+                      }
+                      selectedTab={selectedTab}
                       onSelectCategory={(id) => {
                         setSelectedCategory(id);
                         setOpenTransactionsModal(true);
                       }}
-                      currency={data.currency}
-                      locale={session?.user.favorite_locale || 'en-US'}
                     />
+                  </div>
+                </div>
+
+                {selectedTab === 'expense' ? (
+                  <>
+                    <div className="h-16"></div>
+
+                    <div className="space-y-6">
+                      <div className="text-xl font-semibold">tags</div>
+                      <div className="bg-zinc-900 rounded-lg p-4">
+                        <TagsBreakdown
+                          data={data.monthData.expenses}
+                          selectedTab={selectedTab}
+                          onSelectTag={(id) => {
+                            setSelectedTag(id);
+                            setOpenTransactionsModal(true);
+                          }}
+                        />
+                      </div>
+                    </div>
                   </>
-                )}
+                ) : null}
 
-              <div className="h-16"></div>
+                {data.monthData.currentMonthBudget.budgeted &&
+                  data.monthData.currentMonthBudget.used && (
+                    <>
+                      <div className="h-16"></div>
 
-              <div className="flex flex-col gap-4">
-                <MobileRecentTransactions
-                  locale={session?.user.favorite_locale || 'en-US'}
-                  recentTransactions={data.monthData.lastTransactions}
-                />
-                <TransactionModal
-                  locale={session?.user.favorite_locale || 'en-US'}
-                  openTransactionsModal={openTransactionsModal}
-                  setOpenTransactionsModal={setOpenTransactionsModal}
-                  selectedTabDefault={selectedTab}
-                  dateFrom={dateFrom}
-                  dateTo={dateTo}
-                  setDateFrom={setDateFrom}
-                  setDateTo={setDateTo}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  selectedTag={selectedTag}
-                  setSelectedTag={setSelectedTag}
-                />
+                      <BudgetProgress
+                        budgetTotal={data.monthData.currentMonthBudget.budgeted}
+                        budgetUsed={data.monthData.currentMonthBudget.used}
+                        currency={data.currency}
+                        locale={session?.user.favorite_locale || 'en-US'}
+                      />
+
+                      <BudgetPerCategory
+                        data={data.monthData.expensesByCategory.map(
+                          (expenseByCategory) => {
+                            const image_url =
+                              session?.user.expense_categories.find(
+                                (category) =>
+                                  category.value === expenseByCategory.id
+                              )?.image_url;
+
+                            return {
+                              ...expenseByCategory,
+                              image_url: image_url ?? null,
+                            };
+                          }
+                        )}
+                        onSelectCategory={(id) => {
+                          setSelectedCategory(id);
+                          setOpenTransactionsModal(true);
+                        }}
+                        currency={data.currency}
+                        locale={session?.user.favorite_locale || 'en-US'}
+                      />
+                    </>
+                  )}
+
+                <div className="h-16"></div>
+
+                <div className="flex flex-col gap-4">
+                  <MobileRecentTransactions
+                    locale={session?.user.favorite_locale || 'en-US'}
+                    recentTransactions={data.monthData.lastTransactions}
+                  />
+                  <TransactionModal
+                    locale={session?.user.favorite_locale || 'en-US'}
+                    openTransactionsModal={openTransactionsModal}
+                    setOpenTransactionsModal={setOpenTransactionsModal}
+                    selectedTabDefault={selectedTab}
+                    dateFrom={dateFrom}
+                    dateTo={dateTo}
+                    setDateFrom={setDateFrom}
+                    setDateTo={setDateTo}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    selectedTag={selectedTag}
+                    setSelectedTag={setSelectedTag}
+                  />
+                </div>
+
+                {/*  <IncomeBreakdown
+                data={data.incomeByCategory}
+                currency={data.currency}
+                locale={session?.user.favorite_locale || 'en-US'}
+              /> */}
               </div>
-
-              {/*  <IncomeBreakdown
-              data={data.incomeByCategory}
-              currency={data.currency}
-              locale={session?.user.favorite_locale || 'en-US'}
-            /> */}
             </>
           ) : null}
         </>

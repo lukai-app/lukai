@@ -108,10 +108,12 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
       {/* Progress Bars */}
       <div className="space-y-4">
         {/* Progress bars row */}
-        <div className={cn(
-          "grid gap-6",
-          showIncome && showSpend ? "grid-cols-2" : "grid-cols-1"
-        )}>
+        <div
+          className={cn(
+            'grid gap-6',
+            showIncome && showSpend ? 'grid-cols-2' : 'grid-cols-1'
+          )}
+        >
           {showIncome && (
             <Progress
               value={incomePercentage}
@@ -129,10 +131,12 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
         </div>
 
         {/* Labels and amounts row */}
-        <div className={cn(
-          "grid gap-6",
-          showIncome && showSpend ? "grid-cols-2" : "grid-cols-1"
-        )}>
+        <div
+          className={cn(
+            'grid gap-6',
+            showIncome && showSpend ? 'grid-cols-2' : 'grid-cols-1'
+          )}
+        >
           {showIncome && (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
