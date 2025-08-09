@@ -63,14 +63,14 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
     <div className={cn('rounded-2xl p-6 border border-[#2A2A2A]', className)}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-medium text-slate-300">
+        <h3 className="text-base font-medium text-slate-300">
           tus gastos vs ingresos
         </h3>
       </div>
 
       {/* Net Amount */}
       <div className="mb-6">
-        <div className="text-4xl font-bold mb-2">
+        <div className="text-3xl font-bold mb-2">
           {formatCompactCurrency(netAmount)}
         </div>
 

@@ -29,6 +29,7 @@ import DayjsSingleton from '@/lib/helpers/Dayjs';
 import { TagsBreakdown } from '@/app/dashboard/_components/tags-breakdown';
 import { CashFlowSummary } from '@/app/dashboard/_components/cash-flow-summary';
 import { TrendingUp } from 'lucide-react';
+import { MonthlySpendingMetric } from '../_components/monthly-spending-metric';
 
 export default function HomePage() {
   const { session, signOut, isLoading: isSessionLoading } = useSession();
@@ -387,7 +388,7 @@ export default function HomePage() {
               {/* Main Content */}
               <div className="p-4">
                 {/* Cash Flow Summary */}
-                <div className="mb-8">
+                <div className="mb-8 grid grid-cols-2 gap-4">
                   <CashFlowSummary
                     netAmount={
                       (data.monthData.income.amount ?? 0) -
@@ -400,13 +401,23 @@ export default function HomePage() {
                     currency={data.currency}
                     locale={session?.user.favorite_locale || 'en-US'}
                   />
+                  <MonthlySpendingMetric
+                    data={data.monthData.dailyCashFlow.map((item) => ({
+                      date: item.day,
+                      amount: item.expenses,
+                    }))}
+                    locale={session?.user.favorite_locale || 'en-US'}
+                    budget={data.monthData.currentMonthBudget.budgeted ?? 0}
+                    currency={data.currency}
+                  />
                 </div>
 
                 {/* Charts and Analytics */}
-                <div className="space-y-8">
+                {/* <div className="space-y-8">
                   <div className="rounded-2xl p-6 border border-[#2A2A2A]">
                     <h3 className="text-lg font-semibold text-white mb-4">
-                      {selectedTab === 'expense' ? 'Expenses' : 'Income'} by Day
+                      {selectedTab === 'expense' ? 'gastos' : 'ingresos'} por
+                      día
                     </h3>
                     <MobileDailyCashFlow
                       data={
@@ -436,7 +447,7 @@ export default function HomePage() {
                     />
                   </div>
                 </div>
-
+ */}
                 <div className="h-16"></div>
 
                 <div className="space-y-6">
