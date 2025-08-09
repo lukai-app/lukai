@@ -127,7 +127,7 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
         {/* Labels and amounts row */}
         <div className={cn('flex gap-6')}>
           <div className="flex flex-col gap-1">
-            <span className="text-sm text-slate-300">Income</span>
+            <span className="text-sm text-slate-300">ingresos</span>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-positive" />
               <span className="font-semibold text-positive">
@@ -136,7 +136,7 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-sm text-slate-300">Spend</span>
+            <span className="text-sm text-slate-300">gastos</span>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-yc" />
               <span className="font-semibold">

@@ -404,7 +404,7 @@ export default function HomePage() {
 
                 {/* Charts and Analytics */}
                 <div className="space-y-8">
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                  <div className="rounded-2xl p-6 border border-[#2A2A2A]">
                     <h3 className="text-lg font-semibold text-white mb-4">
                       {selectedTab === 'expense' ? 'Expenses' : 'Income'} by Day
                     </h3>
@@ -460,7 +460,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {selectedTab === 'expense' ? (
+                {/* {selectedTab === 'expense' ? (
                   <>
                     <div className="h-16"></div>
 
@@ -478,7 +478,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   </>
-                ) : null}
+                ) : null} */}
 
                 {data.monthData.currentMonthBudget.budgeted &&
                   data.monthData.currentMonthBudget.used && (
