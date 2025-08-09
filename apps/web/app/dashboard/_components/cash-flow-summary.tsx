@@ -60,24 +60,17 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
   const showSpend = spend > 0;
 
   return (
-    <div
-      className={cn(
-        'bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700',
-        className
-      )}
-    >
+    <div className={cn('rounded-2xl p-6 border border-[#2A2A2A]', className)}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-medium text-slate-300">Net this month</h3>
-        <div className="flex items-center gap-2 text-slate-400">
-          <span className="text-sm">CASH FLOW</span>
-          <TrendingUp className="w-4 h-4" />
-        </div>
+        <h3 className="text-lg font-medium text-slate-300">
+          tus gastos vs ingresos
+        </h3>
       </div>
 
       {/* Net Amount */}
       <div className="mb-6">
-        <div className="text-4xl font-bold text-green-400 mb-2">
+        <div className="text-4xl font-bold mb-2">
           {formatCompactCurrency(netAmount)}
         </div>
 
@@ -108,57 +101,49 @@ export const CashFlowSummary: React.FC<CashFlowSummaryProps> = ({
       {/* Progress Bars */}
       <div className="space-y-4">
         {/* Progress bars row */}
-        <div
-          className={cn(
-            'grid gap-6',
-            showIncome && showSpend ? 'grid-cols-2' : 'grid-cols-1'
-          )}
-        >
+        <div className={cn('flex gap-2')}>
           {showIncome && (
             <Progress
-              value={incomePercentage}
-              className="h-3 bg-slate-700"
-              progressClassName="bg-blue-400"
+              value={100}
+              className={cn('h-3 bg-slate-700')}
+              style={{
+                width: `${incomePercentage}%`,
+              }}
+              progressClassName="bg-[#2EB88A]"
             />
           )}
           {showSpend && (
             <Progress
-              value={spendPercentage}
-              className="h-3 bg-slate-700"
-              progressClassName="bg-blue-300"
+              value={100}
+              className={cn('h-3 bg-slate-700')}
+              style={{
+                width: `${spendPercentage}%`,
+              }}
+              progressClassName="bg-[#F37212]"
             />
           )}
         </div>
 
         {/* Labels and amounts row */}
-        <div
-          className={cn(
-            'grid gap-6',
-            showIncome && showSpend ? 'grid-cols-2' : 'grid-cols-1'
-          )}
-        >
-          {showIncome && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-                <span className="text-sm text-slate-300">Income</span>
-              </div>
-              <span className="text-lg font-semibold text-green-400">
+        <div className={cn('flex gap-6')}>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-slate-300">Income</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-positive" />
+              <span className="font-semibold text-positive">
                 {formatCompactCurrency(income)}
               </span>
             </div>
-          )}
-          {showSpend && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-300"></div>
-                <span className="text-sm text-slate-300">Spend</span>
-              </div>
-              <span className="text-lg font-semibold text-slate-300">
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-slate-300">Spend</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-yc" />
+              <span className="font-semibold">
                 {formatCompactCurrency(spend)}
               </span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

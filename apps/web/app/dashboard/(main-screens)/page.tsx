@@ -386,68 +386,6 @@ export default function HomePage() {
 
               {/* Main Content */}
               <div className="p-4">
-                {/* Summary Stats */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                  {/* Total Net */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-slate-400">
-                        Net this month
-                      </h3>
-                      <div className="flex items-center gap-1 text-slate-500 text-xs">
-                        <span>CASH FLOW</span>
-                        <TrendingUp className="w-3 h-3" />
-                      </div>
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-1">
-                      {formatCurrency(
-                        (data.monthData.income.amount ?? 0) -
-                          (data.monthData.expense.amount ?? 0)
-                      )}
-                    </div>
-                    <div className="text-sm text-slate-400">
-                      vs previous period
-                    </div>
-                  </div>
-
-                  {/* Total Income */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-slate-400">
-                        Total Income
-                      </h3>
-                    </div>
-                    <div className="text-3xl font-bold text-green-400 mb-1">
-                      {formatCurrency(data.monthData.income.amount ?? 0)}
-                    </div>
-                    <div className="text-sm text-slate-400">
-                      +
-                      {(
-                        ((data.monthData.income.amount ?? 0) /
-                          Math.max(data.monthData.expense.amount ?? 1, 1)) *
-                        100
-                      ).toFixed(1)}
-                      % vs expenses
-                    </div>
-                  </div>
-
-                  {/* Total Expenses */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-slate-400">
-                        Total Expenses
-                      </h3>
-                    </div>
-                    <div className="text-3xl font-bold text-red-400 mb-1">
-                      {formatCurrency(data.monthData.expense.amount ?? 0)}
-                    </div>
-                    <div className="text-sm text-slate-400">
-                      {data.monthData.expensesByCategory?.length || 0}{' '}
-                      categories
-                    </div>
-                  </div>
-                </div>
-
                 {/* Cash Flow Summary */}
                 <div className="mb-8">
                   <CashFlowSummary
