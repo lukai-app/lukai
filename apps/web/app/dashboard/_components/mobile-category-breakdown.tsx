@@ -1,98 +1,118 @@
 'use client';
-import { Bar, BarChart, LabelList, XAxis } from 'recharts';
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { formatBigNumber } from '@/lib/helpers/currency';
+import { Progress } from '@/components/ui/progress';
+
+interface CategoryBreakdownItem {
+  id: string;
+  category: string;
+  amount: number;
+  color: string;
+  budget?: number | null;
+  image_url?: string | null;
+}
 
 interface CategoryBreakdownProps {
-  data: Array<{
-    id: string;
-    category: string;
-    amount: number;
-    color: string;
-  }>;
+  data: Array<CategoryBreakdownItem>;
   onSelectCategory: (id: string) => void;
   selectedTab: 'expense' | 'income';
+  currency: string;
+  locale: string;
 }
 
 export const MobileCategoryBreakdown: React.FC<CategoryBreakdownProps> = (
   props
 ) => {
-  const { data: chartData, onSelectCategory, selectedTab } = props;
+  const {
+    data: chartData,
+    onSelectCategory,
+    selectedTab,
+    currency,
+    locale,
+  } = props;
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
 
   return (
-    <ScrollArea className="w-full px-4">
-      <ChartContainer
-        config={{
-          ...Object.fromEntries(
-            chartData.map((item, index) => [
-              item.category,
-              {
-                label: item.category,
-                color: item.color,
-                id: item.id,
-              },
-            ])
-          ),
-          amount: {
-            label: selectedTab === 'expense' ? 'Gastos' : 'Ingresos',
-            color:
-              selectedTab === 'expense' ? '#F37212' : 'hsl(var(--chart-2))',
-          },
-        }}
-        className="h-[300px] w-full"
-      >
-        <BarChart
-          accessibilityLayer
-          data={chartData.sort((a, b) => b.amount - a.amount)}
-          margin={{
-            top: 24,
-          }}
-        >
-          <XAxis
-            dataKey="category"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value) => value.slice(0, 7)}
-          />
+    <div className="w-full">
+      <div className="space-y-3">
+        {chartData
+          .slice()
+          .sort((a, b) => b.amount - a.amount)
+          .map((item) => {
+            const hasBudget = item.budget !== undefined && item.budget !== null;
+            const percentage =
+              hasBudget && item.budget! > 0
+                ? Math.min(
+                    Math.round((item.amount / (item.budget as number)) * 100),
+                    100
+                  )
+                : 100;
 
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent labelFormatter={(value) => value} />}
-          />
+            const barColor =
+              selectedTab === 'expense'
+                ? percentage >= 100
+                  ? 'bg-red-500'
+                  : percentage >= 75
+                    ? 'bg-[#F29D38]'
+                    : 'bg-[#2EB88A]'
+                : 'bg-blue-400';
 
-          <Bar
-            dataKey="amount"
-            fill={'var(--color-amount)'}
-            radius={8}
-            onClick={(e) => {
-              const { payload } = e;
-              onSelectCategory(payload.id);
-            }}
-            maxBarSize={100}
-            className="cursor-pointer"
-          >
-            <LabelList
-              position="top"
-              offset={12}
-              className="fill-foreground"
-              fontSize={12}
-              formatter={(value: any) =>
-                formatBigNumber({ value, decimals: true })
-              }
-            />
-          </Bar>
+            return (
+              <button
+                key={item.id}
+                className="w-full rounded-lg hover:-translate-y-1 transition-all duration-300 text-left"
+                onClick={() => onSelectCategory(item.id)}
+              >
+                <div className="flex items-center gap-3">
+                  {/* Left: Image or dot + name */}
+                  <div className="flex items-center gap-2 min-w-0 w-[45%]">
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.category}
+                        className="w-5 h-5 rounded-md object-cover"
+                      />
+                    ) : (
+                      <span
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                    )}
+                    <span className="truncate text-slate-200 text-base">
+                      {item.category}
+                    </span>
+                  </div>
 
-          <ChartTooltip content={<ChartTooltipContent />} />
-        </BarChart>
-      </ChartContainer>{' '}
-      <ScrollBar orientation="horizontal" className="hidden" />
-    </ScrollArea>
+                  {/* Amount */}
+                  <div className="shrink-0 w-[110px] text-right font-semibold text-slate-200">
+                    {formatCurrency(item.amount)}
+                  </div>
+
+                  {/* Progress */}
+                  <div className="flex-1 min-w-[30%]">
+                    <div className="relative">
+                      <Progress
+                        value={100}
+                        className="h-2 bg-slate-700"
+                        progressClassName={barColor}
+                      />
+                      <div
+                        className={`absolute inset-y-0 left-0 h-2 rounded-full ${barColor}`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+      </div>
+    </div>
   );
 };

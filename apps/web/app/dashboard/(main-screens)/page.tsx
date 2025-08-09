@@ -250,10 +250,26 @@ export default function HomePage() {
                 <MobileCategoryBreakdown
                   data={
                     selectedTab === 'expense'
-                      ? data.monthData.expensesByCategory
-                      : data.monthData.incomeByCategory
+                      ? data.monthData.expensesByCategory.map((c) => ({
+                          ...c,
+                          budget: c.budget ?? null,
+                          image_url:
+                            session?.user.expense_categories.find(
+                              (cat) => cat.value === c.id
+                            )?.image_url ?? null,
+                        }))
+                      : data.monthData.incomeByCategory.map((c) => ({
+                          ...c,
+                          budget: null,
+                          image_url:
+                            session?.user.income_categories.find(
+                              (cat) => cat.value === c.id
+                            )?.image_url ?? null,
+                        }))
                   }
                   selectedTab={selectedTab}
+                  currency={data.currency}
+                  locale={session?.user.favorite_locale || 'en-US'}
                   onSelectCategory={(id) => {
                     setSelectedCategory(id);
                     setOpenTransactionsModal(true);
@@ -319,6 +335,8 @@ export default function HomePage() {
                   <MobileRecentTransactions
                     locale={session?.user.favorite_locale || 'en-US'}
                     recentTransactions={data.monthData.lastTransactions}
+                    incomeIds={data.monthData.incomes.map((i) => i.id)}
+                    onViewAll={() => setOpenTransactionsModal(true)}
                   />
                   <TransactionModal
                     locale={session?.user.favorite_locale || 'en-US'}
@@ -388,7 +406,7 @@ export default function HomePage() {
               {/* Main Content */}
               <div className="p-4">
                 {/* Cash Flow Summary */}
-                <div className="mb-8 grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <CashFlowSummary
                     netAmount={
                       (data.monthData.income.amount ?? 0) -
@@ -448,27 +466,49 @@ export default function HomePage() {
                   </div>
                 </div>
  */}
-                <div className="h-16"></div>
+                <div className="h-4"></div>
 
-                <div className="space-y-6">
-                  <h3 className="text-xl font-semibold">
-                    {selectedTab === 'expense' ? 'gastos' : 'ingresos'} por
-                    categoría
-                  </h3>
-                  <div className="bg-zinc-900 rounded-lg p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-6 rounded-2xl p-6 border border-[#2A2A2A]">
+                    <h3 className="text-base font-medium text-slate-300">
+                      {selectedTab === 'expense' ? 'gastos' : 'ingresos'} por
+                      categoría
+                    </h3>
                     <MobileCategoryBreakdown
                       data={
                         selectedTab === 'expense'
-                          ? data.monthData.expensesByCategory
-                          : data.monthData.incomeByCategory
+                          ? data.monthData.expensesByCategory.map((c) => ({
+                              ...c,
+                              budget: c.budget ?? null,
+                              image_url:
+                                session?.user.expense_categories.find(
+                                  (cat) => cat.value === c.id
+                                )?.image_url ?? null,
+                            }))
+                          : data.monthData.incomeByCategory.map((c) => ({
+                              ...c,
+                              budget: null,
+                              image_url:
+                                session?.user.income_categories.find(
+                                  (cat) => cat.value === c.id
+                                )?.image_url ?? null,
+                            }))
                       }
                       selectedTab={selectedTab}
                       onSelectCategory={(id) => {
                         setSelectedCategory(id);
                         setOpenTransactionsModal(true);
                       }}
+                      currency={data.currency}
+                      locale={session?.user.favorite_locale || 'en-US'}
                     />
                   </div>
+                  <MobileRecentTransactions
+                    locale={session?.user.favorite_locale || 'en-US'}
+                    recentTransactions={data.monthData.lastTransactions}
+                    incomeIds={data.monthData.incomes.map((i) => i.id)}
+                    onViewAll={() => setOpenTransactionsModal(true)}
+                  />
                 </div>
 
                 {/* {selectedTab === 'expense' ? (
@@ -528,28 +568,21 @@ export default function HomePage() {
                     </>
                   )}
 
-                <div className="h-16"></div>
-
-                <div className="flex flex-col gap-4">
-                  <MobileRecentTransactions
-                    locale={session?.user.favorite_locale || 'en-US'}
-                    recentTransactions={data.monthData.lastTransactions}
-                  />
-                  <TransactionModal
-                    locale={session?.user.favorite_locale || 'en-US'}
-                    openTransactionsModal={openTransactionsModal}
-                    setOpenTransactionsModal={setOpenTransactionsModal}
-                    selectedTabDefault={selectedTab}
-                    dateFrom={dateFrom}
-                    dateTo={dateTo}
-                    setDateFrom={setDateFrom}
-                    setDateTo={setDateTo}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                    selectedTag={selectedTag}
-                    setSelectedTag={setSelectedTag}
-                  />
-                </div>
+                <TransactionModal
+                  locale={session?.user.favorite_locale || 'en-US'}
+                  openTransactionsModal={openTransactionsModal}
+                  setOpenTransactionsModal={setOpenTransactionsModal}
+                  selectedTabDefault={selectedTab}
+                  dateFrom={dateFrom}
+                  dateTo={dateTo}
+                  setDateFrom={setDateFrom}
+                  setDateTo={setDateTo}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  selectedTag={selectedTag}
+                  setSelectedTag={setSelectedTag}
+                  showButton={false}
+                />
 
                 {/*  <IncomeBreakdown
                 data={data.incomeByCategory}

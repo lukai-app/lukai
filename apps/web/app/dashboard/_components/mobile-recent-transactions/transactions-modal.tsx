@@ -90,6 +90,7 @@ interface TransactionModalProps {
   setSelectedCategory: (category: string) => void;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
+  showButton?: boolean;
 }
 
 export const getGroupLabel = (date: Date, now: Date): string => {
@@ -176,6 +177,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   setSelectedCategory,
   selectedTag,
   setSelectedTag,
+  showButton = true,
 }) => {
   const { currency, month, year } = useAppContext();
   const dayjs = DayjsSingleton.getInstance(locale);
@@ -275,11 +277,13 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         }
       }}
     >
-      <SheetTrigger asChild>
-        <button className="w-full mt-4 py-3 bg-zinc-800 rounded-lg text-white font-medium">
-          ver todas las transacciones
-        </button>
-      </SheetTrigger>
+      {showButton ? (
+        <SheetTrigger asChild>
+          <button className="w-full mt-4 py-3 bg-zinc-800 rounded-lg text-white font-medium">
+            ver todas las transacciones
+          </button>
+        </SheetTrigger>
+      ) : null}
       <SheetContent
         className=" bg-[#05060A] w-full max-w-full border-none"
         closeButton={false}

@@ -1,4 +1,4 @@
-import { Gauge } from '@/components/ui/gauge';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 interface BudgetPerCategoryProps {
   data: Array<{
@@ -30,79 +30,89 @@ export const BudgetPerCategory = ({
     }).format(value);
   };
 
-  // Filter categories with budget
-  const categoriesWithBudget = data.filter(
-    (category) => category.budget !== null
-  );
+  // Filter categories with budget and sort by spend desc
+  const categoriesWithBudget = data
+    .filter((category) => category.budget !== null)
+    .sort((a, b) => b.amount - a.amount);
 
   if (categoriesWithBudget.length === 0) {
     return null;
   }
 
   return (
-    <div
-      className={cn(
-        'flex flex-wrap gap-4',
-        categoriesWithBudget.length > 2 ? 'justify-between' : '',
-        className
-      )}
-    >
-      {categoriesWithBudget.map((category) => {
-        const budget = category.budget!;
-        const spent = category.amount;
-        const remaining = budget - spent;
-        const percentage = Math.min(Math.round((spent / budget) * 100), 100);
+    <div className={cn('rounded-2xl p-6 border border-[#2A2A2A]', className)}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-slate-200">Top categories</h3>
+        <a
+          href="/dashboard/categories"
+          className="text-sm text-blue-400 hover:underline flex items-center gap-1"
+        >
+          VIEW ALL <span aria-hidden>↗</span>
+        </a>
+      </div>
 
-        // Color logic based on percentage
-        let circleClassName = 'text-[hsla(131,41%,46%,1)]'; // Green for < 75%
-        if (percentage >= 100) {
-          circleClassName = 'text-red-500'; // Red for over budget
-        } else if (percentage >= 75) {
-          circleClassName = 'text-yellow-500'; // Yellow for >= 75%
-        }
+      <div className="space-y-3">
+        {categoriesWithBudget.map((category) => {
+          const budget = category.budget!;
+          const spent = category.amount;
+          const percentage = Math.min(Math.round((spent / budget) * 100), 100);
 
-        return (
-          <button
-            key={category.id}
-            className="flex flex-col items-center justify-center gap-2"
-            onClick={() => onSelectCategory(category.id)}
-          >
-            <Gauge
-              value={percentage}
-              size="medium"
-              showValue={false}
-              circleClassName={circleClassName}
-              backgroundClassName="text-[#333]"
-              children={
-                <div className="absolute flex opacity-0 animate-gauge_fadeIn">
+          const barColor =
+            percentage >= 100
+              ? 'bg-red-500'
+              : percentage >= 75
+                ? 'bg-[#F29D38]'
+                : 'bg-[#2EB88A]';
+
+          return (
+            <button
+              key={category.id}
+              className="w-full hover:bg-slate-900/40 rounded-lg p-2 text-left"
+              onClick={() => onSelectCategory(category.id)}
+            >
+              <div className="flex items-center gap-4">
+                {/* Category */}
+                <div className="flex items-center gap-3 min-w-0 w-[260px]">
                   {category.image_url ? (
                     <img
                       src={category.image_url}
                       alt={category.category}
-                      className="w-5 h-5"
+                      className="w-8 h-8 rounded-md object-cover"
                     />
                   ) : (
-                    <p className="text-xs">{category.category}</p>
+                    <span
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: category.color }}
+                    />
                   )}
+                  <span className="truncate text-slate-200">
+                    {category.category}
+                  </span>
                 </div>
-              }
-            />
-            <div className="text-xs text-center">
-              {remaining < 0 ? (
-                <span className="">
-                  {formatCurrency(Math.abs(remaining))} <br />
-                  sobregiro
-                </span>
-              ) : (
-                <span className="">
-                  {formatCurrency(remaining)} <br />
-                  restante
-                </span>
-              )}
-            </div>
-          </button>
-        );
-      })}
+
+                {/* Spent */}
+                <div className="shrink-0 w-[100px] text-right font-semibold text-slate-200">
+                  {formatCurrency(spent)}
+                </div>
+
+                {/* Progress */}
+                <div className="flex-1">
+                  <Progress
+                    value={percentage}
+                    className="h-2 bg-slate-700"
+                    progressClassName={barColor}
+                  />
+                </div>
+
+                {/* Budget */}
+                <div className="shrink-0 w-[100px] text-right text-slate-400">
+                  {formatCurrency(budget)}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
